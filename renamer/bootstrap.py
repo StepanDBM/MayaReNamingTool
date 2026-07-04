@@ -11,6 +11,12 @@ MODULES_TO_RELOAD = [
     "ui.suffix_widget",
     
     "operations.rename",
+    "operations.search_replace",
+    "operations.colors",
+
+    "utils.undo",
+    "utils.Qt_utils",
+    "utils.maya_utils",
     
     "launcher"
 ]

@@ -76,9 +76,16 @@ def remove_character(position):
             raise ValueError(f"Invalid position: {position}")
 
         cmds.rename(obj, new_name)
+        rename_shapes_for_nodes(
+            cmds.ls(
+                selection=True,
+                long=True
+            ) or []
+        )
 
 
 # Quick Suffix
+@undo_chunk
 def quick_suffix(suffix):
     
     selection = get_selection()
@@ -88,7 +95,12 @@ def quick_suffix(suffix):
         short_name = get_short_name(obj)
 
         cmds.rename(obj, f"{short_name}{suffix}")
-
+        rename_shapes_for_nodes(
+            cmds.ls(
+                selection=True,
+                long=True
+            ) or []
+        )
 
 # Prefix
 def add_prefix(prefix):
@@ -104,6 +116,12 @@ def add_prefix(prefix):
         short_name = get_short_name(obj)
 
         cmds.rename(obj, f"{prefix}{short_name}")
+        rename_shapes_for_nodes(
+            cmds.ls(
+                selection=True,
+                long=True
+            ) or []
+        )
 
 @undo_chunk
 def add_prefix_hierarchy(prefix):
@@ -127,6 +145,12 @@ def add_prefix_hierarchy(prefix):
         short_name = get_short_name(node)
 
         cmds.rename(node, f"{prefix}{short_name}")
+        rename_shapes_for_nodes(
+            cmds.ls(
+                selection=True,
+                long=True
+            ) or []
+        )
 
 # Suffix
 def add_suffix(suffix):
@@ -145,6 +169,12 @@ def add_suffix(suffix):
         short_name = get_short_name(obj)
 
         cmds.rename(obj, f"{short_name}{suffix}")
+        rename_shapes_for_nodes(
+            cmds.ls(
+                selection=True,
+                long=True
+            ) or []
+        )
 
 @undo_chunk
 def add_suffix_hierarchy(suffix):
@@ -168,6 +198,12 @@ def add_suffix_hierarchy(suffix):
         short_name = get_short_name(node)
 
         cmds.rename(node, f"{short_name}{suffix}")
+        rename_shapes_for_nodes(
+            cmds.ls(
+                selection=True,
+                long=True
+            ) or []
+        )
 
 @undo_chunk
 def rename_and_number(
@@ -198,6 +234,12 @@ def rename_and_number(
         new_name = (f"{base_name}{padded}")
 
         cmds.rename(obj, new_name)
+        rename_shapes_for_nodes(
+            cmds.ls(
+                selection=True,
+                long=True
+            ) or []
+        )
 
 
 @undo_chunk
@@ -238,3 +280,27 @@ def hash_rename(pattern):
         )
 
         cmds.rename(obj, new_name)
+
+def rename_shapes_for_nodes(nodes):
+
+    for transform in nodes:
+
+        shapes = cmds.listRelatives(
+            transform,
+            shapes=True,
+            fullPath=True
+        ) or []
+
+        transform_name = get_short_name(transform)
+
+        for index, shape in enumerate(shapes, start=1):
+
+            if len(shapes) == 1:
+
+                new_shape_name = (f"{transform_name}Shape")
+
+            else:
+
+                new_shape_name = (f"{transform_name}Shape{index}")
+
+            cmds.rename(shape, new_shape_name)

@@ -1,9 +1,13 @@
-from PySide2 import QtWidgets, QtCore
+from turtle import color
+
+from PySide2 import QtWidgets, QtCore, QtGui
 
 from ui.styleSheets import MAYA_STYLE
 from operations import rename
+from operations import colors
 
 from utils.Qt_utils import lighter_color, darker_color
+from operations import search_replace
 
 class RenamerMainWindow(QtWidgets.QWidget):
 
@@ -25,6 +29,66 @@ class RenamerMainWindow(QtWidgets.QWidget):
         self.build_ui()
         self.create_connections()
 
+    def get_search_mode(self):
+
+        if self.hierarchy_radio.isChecked():
+            return "hierarchy"
+
+        if self.all_radio.isChecked():
+            return "all"
+
+        return "selected"
+    def pick_color(self):
+
+        color = QtWidgets.QColorDialog.getColor()
+
+        if not color.isValid():
+            return
+
+        self.r_spin.setValue(
+            color.red()
+        )
+
+        self.g_spin.setValue(
+            color.green()
+        )
+
+        self.b_spin.setValue(
+            color.blue()
+        )
+
+    def apply_color(self):
+
+        r = self.r_spin.value() / 255.0
+        g = self.g_spin.value() / 255.0
+        b = self.b_spin.value() / 255.0
+
+        colors.apply_viewport_color(r, g, b)
+        colors.apply_outliner_color(r, g, b)
+
+
+    def set_color_from_button(self, hex_color):
+
+        color = QtGui.QColor(hex_color)
+
+        self.r_spin.setValue(color.red())
+        self.g_spin.setValue(color.green())
+        self.b_spin.setValue(color.blue())
+    
+    def update_color_preview(self):
+
+        color = QtGui.QColor(
+            self.r_spin.value(),
+            self.g_spin.value(),
+            self.b_spin.value()
+        )
+
+        self.color_preview.setStyleSheet(
+            f"""
+            background-color: {color.name()};
+            border: 1px solid #222;
+            """
+        )
 
     # UI
     def build_ui(self):
@@ -120,18 +184,18 @@ class RenamerMainWindow(QtWidgets.QWidget):
         quick_grid = QtWidgets.QGridLayout()
 
         quick_suffixes = [
-            "_grp",
-            "_geo",
-            "_jnt",
-            "_drv",
-            "_lgt",
-            "_BND",
-            "_low",
-            "_high",
-            "_offs",
-            "_auto",
-            "_anim",
-            "_ctrl",
+            "grp",
+            "geo",
+            "jnt",
+            "drv",
+            "lgt",
+            "BND",
+            "low",
+            "high",
+            "offs",
+            "auto",
+            "anim",
+            "ctrl",
         ]
 
         self.quick_suffix_buttons = []
@@ -200,7 +264,41 @@ class RenamerMainWindow(QtWidgets.QWidget):
 
         main_layout.addWidget(self.color_label)
 
-        main_layout.addWidget(self.color_slider)
+        self.color_dialog_btn = QtWidgets.QPushButton(
+            "Pick Color"
+        )
+        self.r_spin = QtWidgets.QSpinBox()
+        self.g_spin = QtWidgets.QSpinBox()
+        self.b_spin = QtWidgets.QSpinBox()
+
+        for spin in (
+            self.r_spin,
+            self.g_spin,
+            self.b_spin
+        ):
+            spin.setRange(0, 255)
+
+        picker_layout = QtWidgets.QHBoxLayout()
+
+        picker_layout.addWidget(self.color_dialog_btn)
+        picker_layout.addWidget(QtWidgets.QLabel("R"))
+        picker_layout.addWidget(self.r_spin)
+        picker_layout.addWidget(QtWidgets.QLabel("G"))
+        picker_layout.addWidget(self.g_spin)
+        picker_layout.addWidget(QtWidgets.QLabel("B"))
+        picker_layout.addWidget(self.b_spin)
+
+        self.color_preview = QtWidgets.QFrame()
+
+        self.color_preview.setFixedSize(40, 20)
+
+        self.color_preview.setFrameShape(QtWidgets.QFrame.Box)
+
+        picker_layout.addWidget(
+            self.color_preview
+        )
+
+        main_layout.addLayout(picker_layout)
 
         color_grid = QtWidgets.QGridLayout()
 
@@ -227,9 +325,9 @@ class RenamerMainWindow(QtWidgets.QWidget):
             btn = QtWidgets.QPushButton()
 
             btn.setProperty("colorButton", True)
+            btn.color = color
 
             btn.setFixedHeight(22)
-
             btn.setStyleSheet(
                 f"""
                 QPushButton {{
@@ -285,68 +383,119 @@ class RenamerMainWindow(QtWidgets.QWidget):
                 self.rename_line.text(),
                 self.start_spin.value(),
                 self.padding_spin.value()
-                )
-
+            )
         )
+
         self.remove_first_btn.clicked.connect(
             lambda: rename.remove_character("first")
         )
+
         self.remove_last_btn.clicked.connect(
             lambda: rename.remove_character("last")
         )
-        self.hash_btn.clicked.connect(
-            lambda: rename.hash_rename(self.hash_line.text())
-        )
-        self.prefix_add_btn.clicked.connect(
-            lambda: rename.add_prefix(self.prefix_line.text())
-        )
-        self.prefix_hier_btn.clicked.connect(
-            lambda: rename.add_prefix_hierarchy(self.prefix_line.text())
-        )
-        self.suffix_add_btn.clicked.connect(
-            lambda: rename.add_suffix(self.suffix_line.text())
 
+        self.hash_btn.clicked.connect(
+            lambda: rename.hash_rename(
+                self.hash_line.text()
+            )
         )
+
+        self.prefix_add_btn.clicked.connect(
+            lambda: rename.add_prefix(
+                self.prefix_line.text()
+            )
+        )
+
+        self.prefix_hier_btn.clicked.connect(
+            lambda: rename.add_prefix_hierarchy(
+                self.prefix_line.text()
+            )
+        )
+
+        self.suffix_add_btn.clicked.connect(
+            lambda: rename.add_suffix(
+                self.suffix_line.text()
+            )
+        )
+
         self.suffix_hier_btn.clicked.connect(
-            lambda: rename.add_suffix_hierarchy(self.suffix_line.text())
+            lambda: rename.add_suffix_hierarchy(
+                self.suffix_line.text()
+            )
         )
+
         self.l_to_r_btn.clicked.connect(
-            lambda: print("L -> R")
+            lambda: search_replace.set_l_to_r_values(
+                self
+            )
         )
+
         self.r_to_l_btn.clicked.connect(
-            lambda: print("R -> L")
+            lambda: search_replace.set_r_to_l_values(
+                self
+            )
         )
 
         self.apply_search_btn.clicked.connect(
-            lambda: print("Search Replace")
+            lambda: search_replace.search_replace(
+                self.search_line.text(),
+                self.replace_line.text(),
+                self.get_search_mode()
+            )
         )
-        self.apply_color_btn.clicked.connect(
-            lambda: print("Apply Color")
+
+        self.color_dialog_btn.clicked.connect(
+            self.pick_color
         )
-        self.reset_color_btn.clicked.connect(
-            lambda: print("Reset Color")
-        )
+
         self.dview_btn.clicked.connect(
-            lambda: print("Display View Color")
+            lambda: colors.apply_viewport_color(
+                self.r_spin.value() / 255.0,
+                self.g_spin.value() / 255.0,
+                self.b_spin.value() / 255.0
+            )
         )
+
         self.doutliner_btn.clicked.connect(
-            lambda: print("Display Outliner Color")
+            lambda: colors.apply_outliner_color(
+                self.r_spin.value() / 255.0,
+                self.g_spin.value() / 255.0,
+                self.b_spin.value() / 255.0
+            )
         )
+
+        self.reset_color_btn.clicked.connect(
+            colors.reset_colors
+        )
+
+        self.apply_color_btn.clicked.connect(
+            self.apply_color
+        )
+
+        self.r_spin.valueChanged.connect(
+            self.update_color_preview
+        )
+
+        self.g_spin.valueChanged.connect(
+            self.update_color_preview
+        )
+
+        self.b_spin.valueChanged.connect(
+            self.update_color_preview
+        )
+
         for button in self.quick_suffix_buttons:
 
             button.clicked.connect(
                 lambda checked=False,
                 s=button.text():
-                rename.quick_suffix(
-                    f"_{s}"
-                )
+                rename.quick_suffix(s)
             )
+
         for button in self.color_buttons:
 
             button.clicked.connect(
                 lambda checked=False,
-                b=button:
-                print(
-                    f"Preset Color: {b.styleSheet()}"
-                )
+                color=button.color:
+                self.set_color_from_button(color)
             )
