@@ -1,7 +1,9 @@
 from PySide2 import QtWidgets, QtCore
 
 from ui.styleSheets import MAYA_STYLE
+from operations import rename
 
+from utils.Qt_utils import lighter_color, darker_color
 
 class RenamerMainWindow(QtWidgets.QWidget):
 
@@ -12,7 +14,13 @@ class RenamerMainWindow(QtWidgets.QWidget):
 
         self.setWindowTitle(self.WINDOW_TITLE)
         self.setMinimumWidth(320)
-
+        self.setWindowFlags(
+            QtCore.Qt.Window
+        )
+        """this allows MAYA to keep the window on top of other
+        itself and other windows Otherwise if viewport is clicked
+        or anything in outliner is clicked this just disappears
+        in Window's window manager."""
         self.setStyleSheet(MAYA_STYLE)
         self.build_ui()
         self.create_connections()
@@ -22,7 +30,7 @@ class RenamerMainWindow(QtWidgets.QWidget):
     def build_ui(self):
 
         main_layout = QtWidgets.QVBoxLayout(self)
-        main_layout.setSpacing(4)
+        main_layout.setSpacing(3)
 
         # Rename and Number
         self.rename_line = QtWidgets.QLineEdit()
@@ -41,13 +49,12 @@ class RenamerMainWindow(QtWidgets.QWidget):
         row.addWidget(self.start_spin)
         row.addWidget(QtWidgets.QLabel("Padding:"))
         row.addWidget(self.padding_spin)
+        self.rename_number_btn = QtWidgets.QPushButton("Rename and Number")
+        row.addWidget(self.rename_number_btn)
 
         main_layout.addLayout(rename_form)
         main_layout.addLayout(row)
 
-        self.rename_number_btn = QtWidgets.QPushButton("Rename and Number")
-
-        main_layout.addWidget(self.rename_number_btn)
 
         # Remove
         remove_layout = QtWidgets.QHBoxLayout()
@@ -113,18 +120,18 @@ class RenamerMainWindow(QtWidgets.QWidget):
         quick_grid = QtWidgets.QGridLayout()
 
         quick_suffixes = [
-            "grp",
-            "geo",
-            "jnt",
-            "drv",
-            "lgt",
-            "BND",
-            "low",
-            "high",
-            "offs",
-            "auto",
-            "anim",
-            "ctrl",
+            "_grp",
+            "_geo",
+            "_jnt",
+            "_drv",
+            "_lgt",
+            "_BND",
+            "_low",
+            "_high",
+            "_offs",
+            "_auto",
+            "_anim",
+            "_ctrl",
         ]
 
         self.quick_suffix_buttons = []
@@ -214,6 +221,9 @@ class RenamerMainWindow(QtWidgets.QWidget):
 
         for color in preset_colors:
 
+            hover_color = lighter_color(color)
+            pressed_color = darker_color(color)
+
             btn = QtWidgets.QPushButton()
 
             btn.setProperty("colorButton", True)
@@ -225,6 +235,14 @@ class RenamerMainWindow(QtWidgets.QWidget):
                 QPushButton {{
                     background-color: {color};
                     border: 1px solid #222;
+                }}
+
+                QPushButton:hover {{
+                    background-color: {hover_color};
+                }}
+
+                QPushButton:pressed {{
+                    background-color: {pressed_color};
                 }}
                 """
             )
@@ -263,36 +281,34 @@ class RenamerMainWindow(QtWidgets.QWidget):
     def create_connections(self):
 
         self.rename_number_btn.clicked.connect(
-            lambda: print("Rename and Number")
+            lambda: rename.rename_and_number(
+                self.rename_line.text(),
+                self.start_spin.value(),
+                self.padding_spin.value()
+                )
+
         )
         self.remove_first_btn.clicked.connect(
-            lambda: print(
-                "Remove First Character"
-            )
+            lambda: rename.remove_character("first")
         )
         self.remove_last_btn.clicked.connect(
-            lambda: print(
-                "Remove Last Character"
-            )
+            lambda: rename.remove_character("last")
         )
         self.hash_btn.clicked.connect(
-            lambda: print("Hash Rename")
+            lambda: rename.hash_rename(self.hash_line.text())
         )
         self.prefix_add_btn.clicked.connect(
-            lambda: print("Add Prefix")
+            lambda: rename.add_prefix(self.prefix_line.text())
         )
         self.prefix_hier_btn.clicked.connect(
-            lambda: print(
-                "Hierarchy Prefix"
-            )
+            lambda: rename.add_prefix_hierarchy(self.prefix_line.text())
         )
         self.suffix_add_btn.clicked.connect(
-            lambda: print("Add Suffix")
+            lambda: rename.add_suffix(self.suffix_line.text())
+
         )
         self.suffix_hier_btn.clicked.connect(
-            lambda: print(
-                "Hierarchy Suffix"
-            )
+            lambda: rename.add_suffix_hierarchy(self.suffix_line.text())
         )
         self.l_to_r_btn.clicked.connect(
             lambda: print("L -> R")
@@ -302,37 +318,27 @@ class RenamerMainWindow(QtWidgets.QWidget):
         )
 
         self.apply_search_btn.clicked.connect(
-            lambda: print(
-                "Search Replace"
-            )
+            lambda: print("Search Replace")
         )
         self.apply_color_btn.clicked.connect(
-            lambda: print(
-                "Apply Color"
-            )
+            lambda: print("Apply Color")
         )
         self.reset_color_btn.clicked.connect(
-            lambda: print(
-                "Reset Color"
-            )
+            lambda: print("Reset Color")
         )
         self.dview_btn.clicked.connect(
-            lambda: print(
-                "Display View Color"
-            )
+            lambda: print("Display View Color")
         )
         self.doutliner_btn.clicked.connect(
-            lambda: print(
-                "Display Outliner Color"
-            )
+            lambda: print("Display Outliner Color")
         )
         for button in self.quick_suffix_buttons:
 
             button.clicked.connect(
                 lambda checked=False,
                 s=button.text():
-                print(
-                    f"Quick Suffix: {s}"
+                rename.quick_suffix(
+                    f"_{s}"
                 )
             )
         for button in self.color_buttons:

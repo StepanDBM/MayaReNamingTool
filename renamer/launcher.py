@@ -1,18 +1,19 @@
+import __main__
+
 from ui.main_window import RenamerMainWindow
-
-
-WINDOW_INSTANCE = None
+from utils.maya_utils import maya_main_window
 
 
 def show():
-    global WINDOW_INSTANCE
 
     try:
-        if WINDOW_INSTANCE:
-            WINDOW_INSTANCE.close()
-            WINDOW_INSTANCE.deleteLater()
-    except:
+        __main__.RENAMER_WINDOW.close()
+        __main__.RENAMER_WINDOW.deleteLater()
+    except Exception:
         pass
 
-    WINDOW_INSTANCE = RenamerMainWindow()
-    WINDOW_INSTANCE.show()
+    __main__.RENAMER_WINDOW = RenamerMainWindow(
+        parent=maya_main_window()
+    )
+
+    __main__.RENAMER_WINDOW.show()
