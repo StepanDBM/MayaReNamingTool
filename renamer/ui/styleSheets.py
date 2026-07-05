@@ -8,9 +8,7 @@ QWidget
     font-size: 9pt;
 }
 
-/* ------------------------------------------------ */
 /* Inputs */
-/* ------------------------------------------------ */
 
 QLineEdit,
 QSpinBox
@@ -27,9 +25,7 @@ QSpinBox:focus
     border: 1px solid #0f5560;
 }
 
-/* ------------------------------------------------ */
 /* Buttons */
-/* ------------------------------------------------ */
 
 QPushButton
 {
@@ -49,9 +45,7 @@ QPushButton:pressed
     background-color: #072e37;
 }
 
-/* ------------------------------------------------ */
 /* Suffix buttons */
-/* ------------------------------------------------ */
 
 QPushButton[quickSuffix="true"]
 {
@@ -63,9 +57,7 @@ QPushButton[quickSuffix="true"]:hover
     background-color: #2d5960;
 }
 
-/* ------------------------------------------------ */
 /* Color buttons */
-/* ------------------------------------------------ */
 
 QPushButton[colorButton="true"]
 {
@@ -73,9 +65,7 @@ QPushButton[colorButton="true"]
     min-height: 22px;
 }
 
-/* ------------------------------------------------ */
 /* Radio Buttons */
-/* ------------------------------------------------ */
 
 QRadioButton
 {
@@ -88,9 +78,7 @@ QRadioButton::indicator
     height: 12px;
 }
 
-/* ------------------------------------------------ */
 /* Slider */
-/* ------------------------------------------------ */
 
 QSlider::groove:horizontal
 {
@@ -105,9 +93,7 @@ QSlider::handle:horizontal
     margin: -5px 0;
 }
 
-/* ------------------------------------------------ */
 /* Group Boxes */
-/* ------------------------------------------------ */
 
 QGroupBox
 {

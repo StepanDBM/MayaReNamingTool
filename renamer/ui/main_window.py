@@ -11,7 +11,7 @@ from operations import search_replace
 
 class RenamerMainWindow(QtWidgets.QWidget):
 
-    WINDOW_TITLE = "reName_reColor"
+    WINDOW_TITLE = "reName Pro - by Styopa DBM"
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -30,6 +30,26 @@ class RenamerMainWindow(QtWidgets.QWidget):
         self.build_ui()
         self.create_connections()
 
+    def add_section(self, title):
+        section_layout = QtWidgets.QHBoxLayout()
+
+        left = QtWidgets.QFrame()
+        left.setFrameShape(QtWidgets.QFrame.HLine)
+
+        right = QtWidgets.QFrame()
+        right.setFrameShape(QtWidgets.QFrame.HLine)
+
+        label = QtWidgets.QLabel(title)
+        label.setStyleSheet(
+            "font-weight:bold;"
+        )
+
+        section_layout.addWidget(left)
+        section_layout.addWidget(label)
+        section_layout.addWidget(right)
+
+        self.layout().addLayout(section_layout)
+        
     def toggle_quick_suffix_case(self):
 
         self.quick_suffix_uppercase = (
@@ -113,27 +133,25 @@ class RenamerMainWindow(QtWidgets.QWidget):
         main_layout.setSpacing(3)
 
         # Strip Namespace
+        self.add_section(title = "--------------- Strip Namespaces ---------------")
         namespace_layout = QtWidgets.QHBoxLayout()
-
-        self.strip_namespace_btn = QtWidgets.QPushButton("Strip Namespace")
-
-        self.strip_namespace_hier_btn = QtWidgets.QPushButton("Hier")
-
+        self.stripDots = QtWidgets.QLabel("Stripping... ")
+        self.strip_namespace_btn = QtWidgets.QPushButton("Namespace")
+        self.strip_namespace_hier_btn = QtWidgets.QPushButton("Hierarchy Namespace")
+        namespace_layout.addWidget(self.stripDots)
         namespace_layout.addWidget(self.strip_namespace_btn)
-
         namespace_layout.addWidget(self.strip_namespace_hier_btn)
 
         main_layout.addLayout(namespace_layout)
 
         # Rename and Number
+        self.add_section(title = "--------------- Rename and Number ---------------")
         self.rename_line = QtWidgets.QLineEdit()
 
         self.start_spin = QtWidgets.QSpinBox()
         self.start_spin.setValue(1)
-
         self.padding_spin = QtWidgets.QSpinBox()
         self.padding_spin.setValue(2)
-
         rename_form = QtWidgets.QFormLayout()
         rename_form.addRow("Rename:", self.rename_line)
 
@@ -150,12 +168,14 @@ class RenamerMainWindow(QtWidgets.QWidget):
 
 
         # Remove
+        self.add_section(title = "--------------- Add/Remove Characters ---------------")
         remove_layout = QtWidgets.QHBoxLayout()
 
+        self.removeDotsLabel = QtWidgets.QLabel("Removing... ")
         self.remove_first_btn = QtWidgets.QPushButton("First Character →")
-
         self.remove_last_btn = QtWidgets.QPushButton("← Last Character")
 
+        remove_layout.addWidget(self.removeDotsLabel)
         remove_layout.addWidget(self.remove_first_btn)
         remove_layout.addWidget(self.remove_last_btn)
 
@@ -165,9 +185,7 @@ class RenamerMainWindow(QtWidgets.QWidget):
         hash_layout = QtWidgets.QHBoxLayout()
 
         self.hash_line = QtWidgets.QLineEdit("name_####_suffix")
-
         self.hash_btn = QtWidgets.QPushButton("Rename")
-
         hash_layout.addWidget(QtWidgets.QLabel("Hash Rename"))
 
         hash_layout.addWidget(self.hash_line)
@@ -179,11 +197,8 @@ class RenamerMainWindow(QtWidgets.QWidget):
         prefix_layout = QtWidgets.QHBoxLayout()
 
         self.prefix_line = QtWidgets.QLineEdit("prefix_")
-
         self.prefix_add_btn = QtWidgets.QPushButton("Add")
-
         self.prefix_hier_btn = QtWidgets.QPushButton("Hier")
-
         prefix_layout.addWidget(QtWidgets.QLabel("(Before)"))
 
         prefix_layout.addWidget(self.prefix_line)
@@ -196,11 +211,8 @@ class RenamerMainWindow(QtWidgets.QWidget):
         suffix_layout = QtWidgets.QHBoxLayout()
 
         self.suffix_line = QtWidgets.QLineEdit("_suffix")
-
         self.suffix_add_btn = QtWidgets.QPushButton("Add")
-
         self.suffix_hier_btn = QtWidgets.QPushButton("Hier")
-
         suffix_layout.addWidget(QtWidgets.QLabel("(After)"))
 
         suffix_layout.addWidget(self.suffix_line)
@@ -306,6 +318,8 @@ class RenamerMainWindow(QtWidgets.QWidget):
         main_layout.addWidget(self.apply_search_btn)
 
         # Color
+        
+        self.add_section(title = "--------------- Coloring Attributes ---------------")
         self.color_label = QtWidgets.QLabel("Color")
 
         self.color_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
