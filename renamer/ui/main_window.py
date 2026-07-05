@@ -25,9 +25,25 @@ class RenamerMainWindow(QtWidgets.QWidget):
         itself and other windows Otherwise if viewport is clicked
         or anything in outliner is clicked this just disappears
         in Window's window manager."""
+        self.quick_suffix_uppercase = False
         self.setStyleSheet(MAYA_STYLE)
         self.build_ui()
         self.create_connections()
+
+    def toggle_quick_suffix_case(self):
+
+        self.quick_suffix_uppercase = (
+            not self.quick_suffix_uppercase
+        )
+
+        for button in self.quick_suffix_buttons:
+
+            text = button.text()
+
+            if self.quick_suffix_uppercase:
+                button.setText(text.upper())
+            else:
+                button.setText(text.lower())
 
     def get_search_mode(self):
 
@@ -95,6 +111,19 @@ class RenamerMainWindow(QtWidgets.QWidget):
 
         main_layout = QtWidgets.QVBoxLayout(self)
         main_layout.setSpacing(3)
+
+        # Strip Namespace
+        namespace_layout = QtWidgets.QHBoxLayout()
+
+        self.strip_namespace_btn = QtWidgets.QPushButton("Strip Namespace")
+
+        self.strip_namespace_hier_btn = QtWidgets.QPushButton("Hier")
+
+        namespace_layout.addWidget(self.strip_namespace_btn)
+
+        namespace_layout.addWidget(self.strip_namespace_hier_btn)
+
+        main_layout.addLayout(namespace_layout)
 
         # Rename and Number
         self.rename_line = QtWidgets.QLineEdit()
@@ -181,7 +210,23 @@ class RenamerMainWindow(QtWidgets.QWidget):
         main_layout.addLayout(suffix_layout)
 
         # Quick Suffix
+
         quick_grid = QtWidgets.QGridLayout()
+
+        self.quick_suffix_case_btn = QtWidgets.QPushButton( "A2a" )
+        self.quick_suffix_case_btn.setMinimumWidth(40)
+        self.quick_suffix_case_btn.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed,
+            QtWidgets.QSizePolicy.Expanding
+        )
+
+        quick_grid.addWidget(
+            self.quick_suffix_case_btn,
+            0,      # row
+            0,      # col
+            2,      # rowSpan
+            1       # colSpan
+        )
 
         quick_suffixes = [
             "grp",
@@ -201,14 +246,17 @@ class RenamerMainWindow(QtWidgets.QWidget):
         self.quick_suffix_buttons = []
 
         for index, suffix in enumerate(quick_suffixes):
-
             button = QtWidgets.QPushButton(suffix)
             button.setProperty("quickSuffix", True)
 
             row = index // 6
-            col = index % 6
+            col = (index % 6) + 1
 
-            quick_grid.addWidget(button, row, col)
+            quick_grid.addWidget(
+                button,
+                row,
+                col
+            )
 
             self.quick_suffix_buttons.append(button)
 
@@ -377,7 +425,12 @@ class RenamerMainWindow(QtWidgets.QWidget):
 
     # Connections
     def create_connections(self):
-
+        self.strip_namespace_btn.clicked.connect(
+            lambda: rename.strip_namespace()
+        )
+        self.strip_namespace_hier_btn.clicked.connect(
+            lambda: rename.strip_namespace_hierarchy()
+        )
         self.rename_number_btn.clicked.connect(
             lambda: rename.rename_and_number(
                 self.rename_line.text(),
@@ -483,13 +536,16 @@ class RenamerMainWindow(QtWidgets.QWidget):
         self.b_spin.valueChanged.connect(
             self.update_color_preview
         )
+        self.quick_suffix_case_btn.clicked.connect(
+            self.toggle_quick_suffix_case
+        )
 
         for button in self.quick_suffix_buttons:
 
             button.clicked.connect(
                 lambda checked=False,
-                s=button.text():
-                rename.quick_suffix(s)
+                b=button:
+                rename.quick_suffix(b.text())
             )
 
         for button in self.color_buttons:

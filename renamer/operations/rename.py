@@ -2,59 +2,17 @@
 import re
 import maya.cmds as cmds
 from utils.undo import undo_chunk
+from utils.maya_utils import (
+    get_selected_uuids,
+    get_selection,
+    get_hierarchy_selection,
+    get_short_name
+)
 
-# Helpers
-
-def get_selected_uuids():
-    return cmds.ls(
-        selection=True,
-        uuid=True
-    ) or []
-
-def get_selection():
-    """
-    Return current selection as long names.
-
-    Long names help prevent hierarchy renaming issues.
-    """
-    return cmds.ls(
-        selection=True,
-        long=True
-    ) or []
-
-def get_hierarchy_selection():
-    """
-    Returns:
-        descendants (leaf -> root)
-        selected roots
-    """
-
-    descendants = []
-
-    selection = cmds.ls(
-        selection=True,
-        long=True
-    ) or []
-
-    for node in selection:
-
-        children = cmds.listRelatives(
-            node,
-            allDescendents=True,
-            fullPath=True
-        ) or []
-
-        descendants.extend(children)
-
-    return descendants, selection
-
-def get_short_name(node):
-    """ ditch DAG path :: |...|group|cube_geo -> cube_geo
-    """
-    return node.split("|")[-1]
 
 
 # Character Removal
+@undo_chunk
 def remove_character(position):
 
     selection = get_selection()
@@ -76,12 +34,7 @@ def remove_character(position):
             raise ValueError(f"Invalid position: {position}")
 
         cmds.rename(obj, new_name)
-        rename_shapes_for_nodes(
-            cmds.ls(
-                selection=True,
-                long=True
-            ) or []
-        )
+        rename_shapes_for_nodes(get_selection())
 
 
 # Quick Suffix
@@ -95,14 +48,10 @@ def quick_suffix(suffix):
         short_name = get_short_name(obj)
 
         cmds.rename(obj, f"{short_name}{suffix}")
-        rename_shapes_for_nodes(
-            cmds.ls(
-                selection=True,
-                long=True
-            ) or []
-        )
+        rename_shapes_for_nodes(get_selection())
 
 # Prefix
+@undo_chunk
 def add_prefix(prefix):
     
     if not prefix:
@@ -116,12 +65,7 @@ def add_prefix(prefix):
         short_name = get_short_name(obj)
 
         cmds.rename(obj, f"{prefix}{short_name}")
-        rename_shapes_for_nodes(
-            cmds.ls(
-                selection=True,
-                long=True
-            ) or []
-        )
+        rename_shapes_for_nodes(get_selection())
 
 @undo_chunk
 def add_prefix_hierarchy(prefix):
@@ -145,14 +89,10 @@ def add_prefix_hierarchy(prefix):
         short_name = get_short_name(node)
 
         cmds.rename(node, f"{prefix}{short_name}")
-        rename_shapes_for_nodes(
-            cmds.ls(
-                selection=True,
-                long=True
-            ) or []
-        )
+        rename_shapes_for_nodes(get_selection())
 
 # Suffix
+@undo_chunk
 def add_suffix(suffix):
     """
     Adds suffix to selected nodes.
@@ -169,12 +109,7 @@ def add_suffix(suffix):
         short_name = get_short_name(obj)
 
         cmds.rename(obj, f"{short_name}{suffix}")
-        rename_shapes_for_nodes(
-            cmds.ls(
-                selection=True,
-                long=True
-            ) or []
-        )
+        rename_shapes_for_nodes(get_selection())
 
 @undo_chunk
 def add_suffix_hierarchy(suffix):
@@ -198,12 +133,7 @@ def add_suffix_hierarchy(suffix):
         short_name = get_short_name(node)
 
         cmds.rename(node, f"{short_name}{suffix}")
-        rename_shapes_for_nodes(
-            cmds.ls(
-                selection=True,
-                long=True
-            ) or []
-        )
+        rename_shapes_for_nodes(get_selection())
 
 @undo_chunk
 def rename_and_number(
@@ -234,12 +164,7 @@ def rename_and_number(
         new_name = (f"{base_name}{padded}")
 
         cmds.rename(obj, new_name)
-        rename_shapes_for_nodes(
-            cmds.ls(
-                selection=True,
-                long=True
-            ) or []
-        )
+        rename_shapes_for_nodes(get_selection())
 
 
 @undo_chunk
@@ -280,7 +205,7 @@ def hash_rename(pattern):
         )
 
         cmds.rename(obj, new_name)
-
+@undo_chunk
 def rename_shapes_for_nodes(nodes):
 
     for transform in nodes:
@@ -304,3 +229,49 @@ def rename_shapes_for_nodes(nodes):
                 new_shape_name = (f"{transform_name}Shape{index}")
 
             cmds.rename(shape, new_shape_name)
+
+
+@undo_chunk
+def strip_namespace():
+
+    uuids = get_selected_uuids()
+
+    for uuid in uuids:
+
+        obj = cmds.ls(uuid, long=True)
+
+        if not obj:
+            continue
+
+        obj = obj[0]
+
+        short_name = get_short_name(obj)
+
+        if ":" not in short_name:
+            continue
+
+        new_name = short_name.split(":")[-1]
+
+        cmds.rename(obj, new_name)
+
+    rename_shapes_for_nodes(get_selection())
+
+@undo_chunk
+def strip_namespace_hierarchy():
+
+    descendants, roots = (get_hierarchy_selection())
+
+    nodes = descendants + roots
+
+    for obj in nodes:
+
+        short_name = get_short_name(obj)
+
+        if ":" not in short_name:
+            continue
+
+        new_name = short_name.split(":")[-1]
+
+        cmds.rename(obj, new_name)
+
+    rename_shapes_for_nodes(get_selection())
