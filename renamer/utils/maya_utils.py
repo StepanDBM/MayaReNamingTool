@@ -1,6 +1,5 @@
+from utils.qt import QtWidgets, wrapInstance
 from maya import OpenMayaUI
-from shiboken2 import wrapInstance
-from PySide2 import QtWidgets
 from maya import cmds
 
 

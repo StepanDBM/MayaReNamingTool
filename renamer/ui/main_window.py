@@ -1,17 +1,28 @@
 from turtle import color
 
-from PySide2 import QtWidgets, QtCore, QtGui
+from utils.qt import (
+    QtWidgets,
+    QtCore,
+    QtGui
+)
 
 from ui.styleSheets import MAYA_STYLE
 from operations import rename
 from operations import colors
 
 from utils.Qt_utils import lighter_color, darker_color
+from utils.qt import get_environment_info
 from operations import search_replace
 
 class RenamerMainWindow(QtWidgets.QWidget):
 
-    WINDOW_TITLE = "reName Pro - by Styopa DBM"
+    
+    WINDOW_TITLE = (
+            "reNamePro "
+            + get_environment_info()
+            + " - by Styopa DBM"
+        )
+
 
     def __init__(self, parent=None):
         super().__init__(parent)

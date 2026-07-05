@@ -1,6 +1,6 @@
 # renamer/utils/Qt_utils.py
 
-from PySide2.QtGui import QColor
+from utils.qt import QColor
 
 
 def lighter_color(hex_color, factor=160):

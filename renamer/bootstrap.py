@@ -17,6 +17,7 @@ MODULES_TO_RELOAD = [
     "utils.undo",
     "utils.Qt_utils",
     "utils.maya_utils",
+    "utils.qt",
     
     "launcher"
 ]
