@@ -30,7 +30,7 @@ class RenamerMainWindow(QtWidgets.QWidget):
             self.WINDOW_TITLE
         )
 
-        self.setMinimumWidth(320)
+        self.setMinimumWidth(340)
 
         self.setWindowFlags(
             QtCore.Qt.Window
@@ -42,15 +42,35 @@ class RenamerMainWindow(QtWidgets.QWidget):
 
         self.build_ui()
 
+    def resizeEvent(self, event):
+
+        super().resizeEvent(event)
+
+        width = self.width()
+
+        if width >= 800:
+
+            self.validation_tab.show()
+
+            self.validation_tab.filters_widget.show()
+
+            self.validation_tab.rules_widget.show()
+
+        elif width >= 580:
+
+            self.validation_tab.show()
+
+            self.validation_tab.filters_widget.hide()
+
+            self.validation_tab.rules_widget.hide()
+
+        else:
+
+            self.validation_tab.hide()
+
     def build_ui(self):
 
         layout = QtWidgets.QVBoxLayout(self)
-
-        self.tabs = QtWidgets.QTabWidget()
-
-        layout.addWidget(
-            self.tabs
-        )
 
         self.main_splitter = QtWidgets.QSplitter(
             QtCore.Qt.Horizontal
@@ -64,10 +84,23 @@ class RenamerMainWindow(QtWidgets.QWidget):
         self.rename_tab.setMinimumWidth(
             320
         )
+        self.rename_tab.setMaximumWidth(
+            320
+        )
 
         self.validation_tab = validation_tab.ValidationTab()
         self.validation_tab.setMinimumWidth(
-            400
+            0
+        )
+
+        self.rename_tab.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed,
+            QtWidgets.QSizePolicy.Expanding
+        )
+
+        self.validation_tab.setSizePolicy(
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding
         )
 
         self.main_splitter.addWidget(

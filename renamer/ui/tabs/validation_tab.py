@@ -50,6 +50,42 @@ class ValidationTab(QtWidgets.QWidget):
         self.build_ui()
         self.create_connections()
 
+    def update_summary(self, issues):
+
+        error_count = sum(
+            1
+            for issue in issues
+            if issue["severity"] == "error"
+        )
+
+        warning_count = sum(
+            1
+            for issue in issues
+            if issue["severity"] == "warning"
+        )
+
+        mindme_count = sum(
+            1
+            for issue in issues
+            if issue["severity"] == "mind_me"
+        )
+
+        self.error_count_lbl.setText(
+            f"Errors: {error_count}"
+        )
+
+        self.warning_count_lbl.setText(
+            f"Warnings: {warning_count}"
+        )
+
+        self.mindme_count_lbl.setText(
+            f"MindMe: {mindme_count}"
+        )
+
+        self.total_count_lbl.setText(
+            f"Total: {len(issues)}"
+        )
+
     def get_allowed_severities(self):
 
         severities = set()
@@ -207,6 +243,39 @@ class ValidationTab(QtWidgets.QWidget):
             self.analyze_btn
         )
 
+        #TOP - SUMMARY
+        self.summary_widget = QtWidgets.QWidget()
+
+        summary_layout = QtWidgets.QHBoxLayout(self.summary_widget)
+
+        summary_layout.setContentsMargins(0, 0, 0, 0)
+        self.summary_widget.setSizePolicy(
+            QtWidgets.QSizePolicy.Preferred,
+            QtWidgets.QSizePolicy.Fixed
+        )
+
+        self.error_count_lbl = QtWidgets.QLabel("Errors: 0")
+        self.error_count_lbl.setStyleSheet("color:#ff5555;font-weight:bold;")
+
+        self.warning_count_lbl = QtWidgets.QLabel("Warnings: 0")
+        self.warning_count_lbl.setStyleSheet("color:#ffaa00;font-weight:bold;")
+
+        self.mindme_count_lbl = QtWidgets.QLabel("MindMe: 0")
+        self.mindme_count_lbl.setStyleSheet("color:#66aaff;font-weight:bold;")
+
+        self.total_count_lbl = QtWidgets.QLabel("Total: 0")
+        self.total_count_lbl.setStyleSheet("font-weight:bold;")
+
+        summary_layout.addWidget(self.error_count_lbl)
+
+        summary_layout.addWidget(self.warning_count_lbl)
+        summary_layout.addWidget(self.mindme_count_lbl)
+        summary_layout.addStretch()
+
+        summary_layout.addWidget(self.total_count_lbl)
+
+        layout.addWidget(self.summary_widget)
+
         splitter = QtWidgets.QSplitter()
 
         layout.addWidget(
@@ -219,9 +288,7 @@ class ValidationTab(QtWidgets.QWidget):
 
         self.filters_widget = QtWidgets.QWidget()
 
-        filters_layout = QtWidgets.QVBoxLayout(
-            self.filters_widget
-        )
+        filters_layout = QtWidgets.QVBoxLayout(self.filters_widget)
 
         filters_layout.addWidget(
             QtWidgets.QLabel(
@@ -229,17 +296,11 @@ class ValidationTab(QtWidgets.QWidget):
             )
         )
 
-        self.error_cb = QtWidgets.QCheckBox(
-            "Error"
-        )
+        self.error_cb = QtWidgets.QCheckBox("Error")
 
-        self.warning_cb = QtWidgets.QCheckBox(
-            "Warning"
-        )
+        self.warning_cb = QtWidgets.QCheckBox("Warning")
 
-        self.mindme_cb = QtWidgets.QCheckBox(
-            "MindMe"
-        )
+        self.mindme_cb = QtWidgets.QCheckBox("MindMe")
 
         self.error_cb.setChecked(True)
         self.warning_cb.setChecked(True)
@@ -339,11 +400,7 @@ class ValidationTab(QtWidgets.QWidget):
 
         self.results_tree.setUniformRowHeights(True)
 
-        self.results_tree.setColumnWidth(
-            0,
-            300
-        )
-
+        
         center_layout.addWidget(
             self.results_tree
         )
@@ -512,8 +569,22 @@ class ValidationTab(QtWidgets.QWidget):
             [
                 250,   # filters
                 700,   # outliner
-                250    # rules
+                200    # rules
             ]
+        )
+        splitter.setCollapsible(
+            0,
+            True
+        )
+
+        splitter.setCollapsible(
+            2,
+            True
+        )
+
+        splitter.setCollapsible(
+            1,
+            False
         )
 
     def select_node_from_item(self, item):
@@ -611,6 +682,9 @@ class ValidationTab(QtWidgets.QWidget):
         self.results_tree.clear()
 
         report = validation.analyze_selection()
+        self.update_summary(
+            report["issues"]
+        )
 
         allowed_severities = (
             self.get_allowed_severities()

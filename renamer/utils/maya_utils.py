@@ -77,23 +77,41 @@ def list_relatives(someTransform):
     ) or []
 
 def get_hierarchy_selection():
-    """
-    Returns:
-        descendants (leaf -> root)
-        selected roots
-    """
-
-    descendants = []
 
     selection = get_selection()
 
+    roots = []
+
     for node in selection:
 
-        children = list_relatives(node)
+        is_child_of_selected = False
 
-        descendants.extend(children)
+        for other in selection:
 
-    return descendants, selection
+            if node == other:
+                continue
+
+            if node.startswith(
+                other + "|"
+            ):
+                is_child_of_selected = True
+                break
+
+        if not is_child_of_selected:
+            roots.append(node)
+
+    descendants = set()
+
+    for root in roots:
+
+        descendants.update(
+            list_relatives(root)
+        )
+
+    return (
+        list(descendants),
+        roots
+    )
 
 def get_short_name(node):
     """ ditch DAG path :: |...|group|cube_geo -> cube_geo
