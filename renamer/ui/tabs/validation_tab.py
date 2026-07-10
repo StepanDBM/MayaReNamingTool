@@ -1,6 +1,8 @@
+from importlib import reload
 from utils.qt import QtWidgets
 
 from operations import validation
+reload(validation)
 
 
 class ValidationTab(QtWidgets.QWidget):
@@ -46,55 +48,29 @@ class ValidationTab(QtWidgets.QWidget):
 
         report = validation.analyze_selection()
 
-        prefixes_item = QtWidgets.QTreeWidgetItem(
-            ["Prefixes"]
+        issues_item = QtWidgets.QTreeWidgetItem(
+            ["Issues"]
         )
 
         self.results_tree.addTopLevelItem(
-            prefixes_item
+            issues_item
         )
+        print(report)
+        for issue in report["issues"]:
 
-        for name, count in sorted(
-            report["prefixes"].items()
-        ):
-
-            prefixes_item.addChild(
-                QtWidgets.QTreeWidgetItem(
-                    [name, str(count)]
-                )
+            text = (
+                f"[{issue['category']}] "
+                f"{issue['message']} : "
+                f"{issue['name']} -> "
+                f"{issue['suggestion']}"
             )
 
-        suffixes_item = QtWidgets.QTreeWidgetItem(
-            ["Suffixes"]
-        )
-
-        self.results_tree.addTopLevelItem(
-            suffixes_item
-        )
-
-        for name, count in sorted(
-            report["suffixes"].items()
-        ):
-
-            suffixes_item.addChild(
+            issues_item.addChild(
                 QtWidgets.QTreeWidgetItem(
-                    [name, str(count)]
-                )
-            )
-
-        warnings_item = QtWidgets.QTreeWidgetItem(
-            ["Warnings"]
-        )
-
-        self.results_tree.addTopLevelItem(
-            warnings_item
-        )
-
-        for warning in report["warnings"]:
-
-            warnings_item.addChild(
-                QtWidgets.QTreeWidgetItem(
-                    [warning]
+                    [
+                        text,
+                        issue["severity"]
+                    ]
                 )
             )
 

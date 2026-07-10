@@ -12,9 +12,7 @@ def analyze_selection():
     nodes = get_selection()
 
     report = {
-        "prefixes": {},
-        "suffixes": {},
-        "warnings": []
+        "issues": []
     }
 
     if not nodes:
@@ -29,36 +27,39 @@ def analyze_selection():
 
         parts = name.split("_")
 
-        if len(parts) >= 2:
+        if len(parts) < 2:
+            continue
 
-            prefixes.append(parts[0])
-
-            suffixes.append(parts[-1])
+        prefixes.append(parts[0])
+        suffixes.append(parts[-1])
 
     prefix_counter = Counter(prefixes)
     suffix_counter = Counter(suffixes)
-
-    report["prefixes"] = dict(prefix_counter)
-    report["suffixes"] = dict(suffix_counter)
-
-    warnings = []
-
-    warnings.extend(
-        find_possible_typos(prefix_counter)
+    print("PREFIXES:", prefix_counter)
+    print("SUFFIXES:", suffix_counter)
+    report["issues"].extend(
+        find_possible_typos(
+            prefix_counter,
+            category="prefix"
+        )
     )
 
-    warnings.extend(
-        find_possible_typos(suffix_counter)
+    report["issues"].extend(
+        find_possible_typos(
+            suffix_counter,
+            category="suffix"
+        )
     )
-
-    report["warnings"] = warnings
 
     return report
 
 
-def find_possible_typos(counter):
+def find_possible_typos(
+    counter,
+    category
+):
 
-    warnings = []
+    issues = []
 
     names = list(counter.keys())
 
@@ -67,9 +68,15 @@ def find_possible_typos(counter):
         if counter[name] > 1:
             continue
 
+        candidates = [
+            candidate
+            for candidate in names
+            if candidate != name
+        ]
+
         matches = get_close_matches(
             name,
-            names,
+            candidates,
             n=1,
             cutoff=0.75
         )
@@ -78,12 +85,18 @@ def find_possible_typos(counter):
             continue
 
         suggestion = matches[0]
-
+        
         if suggestion == name:
             continue
 
-        warnings.append(
-            f"Possible typo: '{name}' -> '{suggestion}'"
+        issues.append(
+            {
+                "category": category,
+                "severity": "warning",
+                "name": name,
+                "message": "Possible typo",
+                "suggestion": suggestion,
+            }
         )
 
-    return warnings
+    return issues
