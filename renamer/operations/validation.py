@@ -7,6 +7,9 @@ from operations.validators.typo_validator import (
 from operations.validators.numbering_validator import (
     find_numbering_issues
 )
+from operations.validators.default_name_validator import (
+    find_default_name_issues
+)
 
 
 def analyze_selection():
@@ -26,6 +29,10 @@ def analyze_selection():
 
     report["issues"].extend(
         find_numbering_issues(nodes)
+    )
+    
+    report["issues"].extend(
+        find_default_name_issues(nodes)
     )
 
     print(report)

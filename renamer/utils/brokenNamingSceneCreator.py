@@ -100,4 +100,158 @@ cmds.group(empty=True, name="rope_002_jnt")
 cmds.group(empty=True, name="rope_003_jnt")
 cmds.group(empty=True, name="rope_015_jnt")
 
+# -----------------------------
+# DEFAULT MAYA NAMES
+# -----------------------------
+
+cmds.polyCube(name="pCube1")
+cmds.polySphere(name="pSphere1")
+
+cmds.group(empty=True, name="group1")
+
+cmds.spaceLocator(name="locator1")
+
+cmds.joint(name="joint1")
+cmds.select(clear=True)
+
+# -----------------------------
+# DOUBLE UNDERSCORES
+# -----------------------------
+
+cmds.group(
+    empty=True,
+    name="char__arm_geo"
+)
+
+cmds.group(
+    empty=True,
+    name="vehicle__wheel_geo"
+)
+
+# -----------------------------
+# EMPTY TOKENS
+# -----------------------------
+
+cmds.group(
+    empty=True,
+    name="char___geo"
+)
+
+# -----------------------------
+# DUPLICATE NUMBERING
+# -----------------------------
+
+cmds.group(
+    empty=True,
+    name="tail_01_ctrl"
+)
+
+cmds.group(
+    empty=True,
+    name="tail_02_ctrl"
+)
+
+cmds.group(
+    empty=True,
+    name="tail_02_ctrl_DUP"
+)
+
+# -----------------------------
+# INCONSISTENT PADDING
+# -----------------------------
+
+cmds.group(
+    empty=True,
+    name="chain_1_jnt"
+)
+
+cmds.group(
+    empty=True,
+    name="chain_02_jnt"
+)
+
+cmds.group(
+    empty=True,
+    name="chain_003_jnt"
+)
+
+# -----------------------------
+# TYPE MISMATCH
+# -----------------------------
+
+cmds.joint(
+    name="character_elbow_geo"
+)
+
+cmds.select(clear=True)
+
+# -----------------------------
+# TOKEN COUNT ISSUES
+# -----------------------------
+
+cmds.group(
+    empty=True,
+    name="char_leg_geo"
+)
+
+cmds.group(
+    empty=True,
+    name="char_upper_leg_knee_geo"
+)
+
+# -----------------------------
+# UNKNOWN SUFFIXES
+# -----------------------------
+
+cmds.group(
+    empty=True,
+    name="vehicle_engine_xyz"
+)
+
+cmds.group(
+    empty=True,
+    name="prop_table_thing"
+)
+
+# -----------------------------
+# MIXED NAMING STYLE
+# -----------------------------
+
+cmds.group(
+    empty=True,
+    name="characterLeftArmGeo"
+)
+
+cmds.group(
+    empty=True,
+    name="character_right_arm_geo"
+)
+
+# -----------------------------
+# DUPLICATE SHORT NAMES
+# -----------------------------
+
+root_a = cmds.group(
+    empty=True,
+    name="groupA"
+)
+
+root_b = cmds.group(
+    empty=True,
+    name="groupB"
+)
+
+cmds.group(
+    empty=True,
+    name="wheel_geo",
+    parent=root_a
+)
+
+cmds.group(
+    empty=True,
+    name="wheel_geo",
+    parent=root_b
+)
+
+
 print("Validation test scene created.")
