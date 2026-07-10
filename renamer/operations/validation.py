@@ -121,6 +121,6 @@ def analyze_selection():
         token_count_validator.find_token_count_issues(nodes)
     )
 
-    print(report)
+    #print(report)
 
     return report

@@ -25,6 +25,10 @@ class RenamerMainWindow(QtWidgets.QWidget):
     def __init__(self, parent=None):
 
         super().__init__(parent)
+        self.settings = QtCore.QSettings(
+            "StyopaDBM",
+            "reNamePro"
+        )
 
         self.setWindowTitle(
             self.WINDOW_TITLE
@@ -68,6 +72,15 @@ class RenamerMainWindow(QtWidgets.QWidget):
 
             self.validation_tab.hide()
 
+    def closeEvent(self, event):
+
+        self.settings.setValue(
+            "mainSplitterState",
+            self.main_splitter.saveState()
+        )
+        self.validation_tab.save_layout_state()
+        super().closeEvent(event)
+
     def build_ui(self):
 
         layout = QtWidgets.QVBoxLayout(self)
@@ -76,22 +89,14 @@ class RenamerMainWindow(QtWidgets.QWidget):
             QtCore.Qt.Horizontal
         )
 
-        layout.addWidget(
-            self.main_splitter
-        )
+        layout.addWidget(self.main_splitter)
 
         self.rename_tab = rename_tab.RenameTab()
-        self.rename_tab.setMinimumWidth(
-            320
-        )
-        self.rename_tab.setMaximumWidth(
-            320
-        )
+        self.rename_tab.setMinimumWidth(320)
+        self.rename_tab.setMaximumWidth(320)
 
         self.validation_tab = validation_tab.ValidationTab()
-        self.validation_tab.setMinimumWidth(
-            0
-        )
+        self.validation_tab.setMinimumWidth(0)
 
         self.rename_tab.setSizePolicy(
             QtWidgets.QSizePolicy.Fixed,
@@ -103,13 +108,15 @@ class RenamerMainWindow(QtWidgets.QWidget):
             QtWidgets.QSizePolicy.Expanding
         )
 
-        self.main_splitter.addWidget(
-            self.rename_tab
-        )
+        self.main_splitter.addWidget(self.rename_tab)
 
-        self.main_splitter.addWidget(
-            self.validation_tab
-        )
+        self.main_splitter.addWidget(self.validation_tab)
+        splitter_state = self.settings.value("mainSplitterState")
+
+        if splitter_state:
+            self.main_splitter.restoreState(
+                splitter_state
+            )
 
         self.main_splitter.setStretchFactor(0,1)
 

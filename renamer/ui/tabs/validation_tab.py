@@ -46,9 +46,21 @@ class ValidationTab(QtWidgets.QWidget):
             self.rules["categories"]
         )
 
+        self.settings = QtCore.QSettings(
+            "StyopaDBM",
+            "reNamePro"
+        )
         
         self.build_ui()
         self.create_connections()
+
+    def save_layout_state(self):
+
+        self.settings.setValue(
+            "validationSplitterState",
+            self.splitter.saveState()
+        )
+
 
     def update_summary(self, issues):
 
@@ -255,16 +267,16 @@ class ValidationTab(QtWidgets.QWidget):
         )
 
         self.error_count_lbl = QtWidgets.QLabel("Errors: 0")
-        self.error_count_lbl.setStyleSheet("color:#ff5555;font-weight:bold;")
+        QtColoring.apply_severity_color(self.error_count_lbl,"error")
 
         self.warning_count_lbl = QtWidgets.QLabel("Warnings: 0")
-        self.warning_count_lbl.setStyleSheet("color:#ffaa00;font-weight:bold;")
+        QtColoring.apply_severity_color(self.warning_count_lbl,"warning")
 
         self.mindme_count_lbl = QtWidgets.QLabel("MindMe: 0")
-        self.mindme_count_lbl.setStyleSheet("color:#66aaff;font-weight:bold;")
+        QtColoring.apply_severity_color(self.mindme_count_lbl,"mind_me")
 
         self.total_count_lbl = QtWidgets.QLabel("Total: 0")
-        self.total_count_lbl.setStyleSheet("font-weight:bold;")
+        QtColoring.apply_severity_color(self.total_count_lbl)
 
         summary_layout.addWidget(self.error_count_lbl)
 
@@ -276,10 +288,10 @@ class ValidationTab(QtWidgets.QWidget):
 
         layout.addWidget(self.summary_widget)
 
-        splitter = QtWidgets.QSplitter()
+        self.splitter = QtWidgets.QSplitter()
 
         layout.addWidget(
-            splitter
+            self.splitter
         )
 
         # -------------------------
@@ -550,42 +562,52 @@ class ValidationTab(QtWidgets.QWidget):
             )
 
         # -------------------------
-        # SPLITTER
+        # splitter
         # -------------------------
 
-        splitter.addWidget(
+        self.splitter.addWidget(
             self.filters_widget
         )
 
-        splitter.addWidget(
+        self.splitter.addWidget(
             center_widget
         )
 
-        splitter.addWidget(
+        self.splitter.addWidget(
             self.rules_widget
         )
 
-        splitter.setSizes(
+        self.splitter.setSizes(
             [
                 250,   # filters
                 700,   # outliner
                 200    # rules
             ]
         )
-        splitter.setCollapsible(
+        self.splitter.setCollapsible(
             0,
             True
         )
 
-        splitter.setCollapsible(
+        self.splitter.setCollapsible(
             2,
             True
         )
 
-        splitter.setCollapsible(
+        self.splitter.setCollapsible(
             1,
             False
         )
+
+        splitter_state = self.settings.value(
+            "validationSplitterState"
+        )
+
+        if splitter_state:
+
+            self.splitter.restoreState(
+                splitter_state
+            )
 
     def select_node_from_item(self, item):
 

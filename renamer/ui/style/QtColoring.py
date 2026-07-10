@@ -3,7 +3,11 @@ from utils.qt import (
 )
 
 from config import severityTypes
-
+DEFAULT_TEXT_COLOR = QColor(
+    220,
+    220,
+    220
+)
 
 def get_severity_color(severity):
 
@@ -85,3 +89,27 @@ def darker_color(hex_color, factor=130):
 
     return QColor(hex_color).darker(factor).name()
 
+def apply_severity_color(
+    widget,
+    severity=None,
+    bold=True
+):
+
+    if severity:
+
+        color = get_severity_color(
+            severity
+        ).name()
+
+    else:
+
+        color = DEFAULT_TEXT_COLOR
+
+    style = f"color:{color};"
+
+    if bold:
+        style += "font-weight:bold;"
+
+    widget.setStyleSheet(
+        style
+    )
