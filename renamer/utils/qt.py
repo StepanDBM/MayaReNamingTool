@@ -37,9 +37,7 @@ QPainter = None
 QPainterPath = None
 
 
-# --------------------------------------------------
 # PySide6 (Maya 2025+)
-# --------------------------------------------------
 
 try:
 
@@ -57,9 +55,7 @@ try:
     QT_BINDING = "PySide6"
     QT_VERSION = 6
 
-# --------------------------------------------------
 # PySide2 (Maya 2017-2024)
-# --------------------------------------------------
 
 except ImportError:
 
@@ -79,9 +75,7 @@ except ImportError:
         QT_BINDING = "PySide2"
         QT_VERSION = 2
 
-    # --------------------------------------------------
     # Ancient PySide
-    # --------------------------------------------------
 
     except ImportError:
 
@@ -111,46 +105,31 @@ except ImportError:
             )
 
 
-# --------------------------------------------------
 # Common aliases
-# --------------------------------------------------
 
 if QtGui is not None:
 
     QColor = QtGui.QColor
-
     QIcon = QtGui.QIcon
-
     QPixmap = QtGui.QPixmap
-
     QFont = QtGui.QFont
-
     QBrush = QtGui.QBrush
-
     QPen = QtGui.QPen
-
     QPalette = QtGui.QPalette
-
     QPainter = QtGui.QPainter
-
     QPainterPath = QtGui.QPainterPath
 
 
-# --------------------------------------------------
 # Helper Functions
-# --------------------------------------------------
 
 def is_qt6():
     return QT_BINDING == "PySide6"
 
-
 def is_qt5():
     return QT_BINDING == "PySide2"
 
-
 def is_qt4():
     return QT_BINDING == "PySide"
-
 
 def print_qt_info():
 

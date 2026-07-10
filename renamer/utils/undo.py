@@ -10,16 +10,13 @@ def undo_chunk(func):
         cmds.undoInfo(
             openChunk=True
         )
-
         try:
             return func(
                 *args,
                 **kwargs
             )
-
         finally:
             cmds.undoInfo(
                 closeChunk=True
             )
-
     return wrapper

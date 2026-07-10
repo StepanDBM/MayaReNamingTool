@@ -309,37 +309,27 @@ class RenamerMainWindow(QtWidgets.QWidget):
         main_layout.addLayout(search_replace_layout)
 
         self.hierarchy_radio = QtWidgets.QRadioButton("Hierarchy")
-
         self.selected_radio = QtWidgets.QRadioButton("Selected")
-
         self.all_radio = QtWidgets.QRadioButton("All")
-
         self.hierarchy_radio.setChecked(True)
-
         radio_layout = QtWidgets.QHBoxLayout()
 
         radio_layout.addWidget(self.hierarchy_radio)
         radio_layout.addWidget(self.selected_radio)
         radio_layout.addWidget(self.all_radio)
-
         main_layout.addLayout(radio_layout)
 
         self.apply_search_btn = QtWidgets.QPushButton("Apply")
-
         main_layout.addWidget(self.apply_search_btn)
 
         # Color
         
         self.add_section(title = "--------------- Coloring Attributes ---------------")
         self.color_label = QtWidgets.QLabel("Color")
-
         self.color_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-
         main_layout.addWidget(self.color_label)
 
-        self.color_dialog_btn = QtWidgets.QPushButton(
-            "Pick Color"
-        )
+        self.color_dialog_btn = QtWidgets.QPushButton("Pick Color")
         self.r_spin = QtWidgets.QSpinBox()
         self.g_spin = QtWidgets.QSpinBox()
         self.b_spin = QtWidgets.QSpinBox()
@@ -362,14 +352,10 @@ class RenamerMainWindow(QtWidgets.QWidget):
         picker_layout.addWidget(self.b_spin)
 
         self.color_preview = QtWidgets.QFrame()
-
         self.color_preview.setFixedSize(40, 20)
-
         self.color_preview.setFrameShape(QtWidgets.QFrame.Box)
 
-        picker_layout.addWidget(
-            self.color_preview
-        )
+        picker_layout.addWidget(self.color_preview)
 
         main_layout.addLayout(picker_layout)
 
@@ -427,23 +413,15 @@ class RenamerMainWindow(QtWidgets.QWidget):
             self.color_buttons.append(btn)
 
         main_layout.addLayout(color_grid)
-
         color_actions = QtWidgets.QHBoxLayout()
-
         self.apply_color_btn = QtWidgets.QPushButton("Apply Color")
-
         self.reset_color_btn = QtWidgets.QPushButton("Reset Color")
-
         self.dview_btn = QtWidgets.QPushButton("DView Color")
-
         self.doutliner_btn = QtWidgets.QPushButton("DOut Color")
 
         color_actions.addWidget(self.apply_color_btn)
-
         color_actions.addWidget(self.reset_color_btn)
-
         color_actions.addWidget(self.dview_btn)
-
         color_actions.addWidget(self.doutliner_btn)
 
         main_layout.addLayout(color_actions)
