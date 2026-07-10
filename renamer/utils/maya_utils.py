@@ -49,16 +49,25 @@ def get_selection():
         long=True
     ) or []
 
-def get_naming_nodes():
+def get_naming_nodes(nodes=None):
+
+    if nodes is None:
+        nodes = get_selection()
 
     return [
         node
-        for node in get_selection()
+        for node in nodes
         if not cmds.objectType(
             node,
             isAType="shape"
         )
     ]
+
+def get_all_naming_nodes():
+
+    return get_naming_nodes(
+        cmds.ls(long=True)
+    )
 
 def list_relatives(someTransform):
     return cmds.listRelatives(

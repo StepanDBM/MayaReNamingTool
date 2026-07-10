@@ -1,0 +1,57 @@
+from collections import Counter, defaultdict
+
+from utils import maya_utils as mUt
+
+from operations.validators import validation_utils as valUtil
+
+
+def find_token_count_issues(nodes):
+
+    issues = []
+
+    families = defaultdict(list)
+
+    for node in nodes:
+
+        name = mUt.get_short_name(node)
+
+        parts = name.split("_")
+
+        if len(parts) < 2:
+            continue
+
+        family = parts[0]
+
+        families[family].append(
+            (name, len(parts))
+        )
+
+    for family, entries in families.items():
+
+        counts = [
+            token_count
+            for _, token_count in entries
+        ]
+
+        expected = Counter(
+            counts
+        ).most_common(1)[0][0]
+
+        for name, token_count in entries:
+
+            if token_count == expected:
+                continue
+
+            issues.append(
+                valUtil.build_issue(
+                    category="structure",
+                    value=name,
+                    message="Unexpected token count",
+                    suggestion=(
+                        f"Expected {expected} tokens, "
+                        f"found {token_count}"
+                    )
+                )
+            )
+
+    return issues

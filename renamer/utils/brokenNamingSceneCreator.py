@@ -1,6 +1,7 @@
 import maya.cmds as cmds
 
 cmds.file(new=True, force=True)
+#most are empty groups for the EMTPY GROUP VALIDATION
 
 # -----------------------------
 # GOOD JOINT CHAIN
@@ -176,14 +177,28 @@ cmds.group(
 )
 
 # -----------------------------
-# TYPE MISMATCH
+# TYPE MISMATCHES
 # -----------------------------
+
+cmds.select(clear=True)
 
 cmds.joint(
     name="character_elbow_geo"
 )
 
 cmds.select(clear=True)
+
+cmds.polyCube(
+    name="environment_wall_jnt"
+)
+
+cmds.spaceLocator(
+    name="locator_A_geo"
+)
+
+cmds.camera(
+    name="renderCamera_ctrl"
+)
 
 # -----------------------------
 # TOKEN COUNT ISSUES
@@ -253,5 +268,17 @@ cmds.group(
     parent=root_b
 )
 
+# -----------------------------
+# DUPLICATE NUMBERING
+# -----------------------------
 
+cmds.group(
+    empty=True,
+    name="tail_A_02_ctrl"
+)
+
+cmds.group(
+    empty=True,
+    name="tail_B_02_ctrl"
+)
 print("Validation test scene created.")
