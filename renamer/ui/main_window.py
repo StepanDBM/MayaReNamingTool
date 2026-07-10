@@ -52,16 +52,33 @@ class RenamerMainWindow(QtWidgets.QWidget):
             self.tabs
         )
 
+        self.main_splitter = QtWidgets.QSplitter(
+            QtCore.Qt.Horizontal
+        )
+
+        layout.addWidget(
+            self.main_splitter
+        )
+
         self.rename_tab = rename_tab.RenameTab()
+        self.rename_tab.setMinimumWidth(
+            320
+        )
 
         self.validation_tab = validation_tab.ValidationTab()
-
-        self.tabs.addTab(
-            self.rename_tab,
-            "reName"
+        self.validation_tab.setMinimumWidth(
+            400
         )
 
-        self.tabs.addTab(
-            self.validation_tab,
-            "Validation"
+        self.main_splitter.addWidget(
+            self.rename_tab
         )
+
+        self.main_splitter.addWidget(
+            self.validation_tab
+        )
+
+        self.main_splitter.setStretchFactor(0,1)
+
+        self.main_splitter.setStretchFactor(1,2)
+

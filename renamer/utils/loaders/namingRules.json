@@ -1,0 +1,87 @@
+{
+    "categories": {
+        "duplicate_name": {
+            "enabled": true,
+            "label": "Duplicate Names"
+        },
+        "hierarchy": {
+            "enabled": true,
+            "label": "Hierarchy"
+        },
+        "naming": {
+            "enabled": true,
+            "label": "Naming"
+        },
+        "numbering": {
+            "enabled": true,
+            "label": "Numbering"
+        },
+        "prefix": {
+            "enabled": true,
+            "label": "Prefix"
+        },
+        "side": {
+            "enabled": true,
+            "label": "Side"
+        },
+        "structure": {
+            "enabled": true,
+            "label": "Structure"
+        },
+        "suffix": {
+            "enabled": true,
+            "label": "Suffix"
+        },
+        "token": {
+            "enabled": true,
+            "label": "Token"
+        },
+        "type": {
+            "enabled": true,
+            "label": "Type"
+        },
+        "underscore": {
+            "enabled": true,
+            "label": "Underscore"
+        }
+    },
+    "prefixes": [
+        "char",
+        "character",
+        "vehicle",
+        "prop",
+        "tentacle",
+        "rope",
+        "Left",
+        "Right"
+    ],
+    "side_tokens": [
+        "L",
+        "R",
+        "Left",
+        "Right"
+    ],
+    "suffixes": [
+        "geo",
+        "grp",
+        "jnt",
+        "bnd",
+        "drv",
+        "ctrl",
+        "anim",
+        "auto",
+        "offs",
+        "loc",
+        "cam",
+        "lgt"
+    ],
+    "types": {
+        "camera": "cam",
+        "joint": "jnt",
+        "light": "lgt",
+        "locator": "loc",
+        "mesh": "geo",
+        "nurbsCurve": "ctrl",
+        "transform": "grp"
+    }
+}

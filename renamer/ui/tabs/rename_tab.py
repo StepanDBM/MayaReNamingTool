@@ -7,7 +7,7 @@ from utils.qt import (
 from operations import rename
 from operations import colors
 
-from utils.Qt_utils import lighter_color, darker_color
+from ui.style.QtColoring import lighter_color, darker_color
 from operations import search_replace
 
 class RenameTab(QtWidgets.QWidget):
@@ -524,7 +524,6 @@ class RenameTab(QtWidgets.QWidget):
         self.quick_suffix_case_btn.clicked.connect(
             self.toggle_quick_suffix_case
         )
-
         for button in self.quick_suffix_buttons:
 
             button.clicked.connect(

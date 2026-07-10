@@ -1,16 +1,11 @@
 from collections import Counter
+from importlib import reload
 
 from utils import maya_utils as mUt
 
 from operations.validators import validation_utils as valUtil
-
-
-SIDE_TOKENS = {
-    "L",
-    "R",
-    "Left",
-    "Right"
-}
+from config import namingConventions
+reload(namingConventions)
 
 
 def find_side_naming_issues(nodes):
@@ -30,7 +25,7 @@ def find_side_naming_issues(nodes):
 
         side = parts[0]
 
-        if side not in SIDE_TOKENS:
+        if side not in namingConventions.SIDE_TOKENS:
             continue
 
         sides.append(side)
@@ -57,7 +52,6 @@ def find_side_naming_issues(nodes):
         issues.append(
             valUtil.build_issue(
                 category="side",
-                node = name,
                 value="R / Right",
                 message="Mixed right-side naming convention",
                 suggestion="Use either R or Right consistently",

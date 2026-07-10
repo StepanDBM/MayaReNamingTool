@@ -128,3 +128,25 @@ def get_hierarchy_rename_order():
     return sort_nodes_for_rename(
         descendants + roots
     )
+
+def frame_object_on_name(node_name):
+
+    matches = cmds.ls(
+        node_name,
+        long=True
+    ) or []
+
+    if len(matches) != 1:
+
+        cmds.warning(
+            f"Cannot uniquely identify: {node_name}"
+        )
+
+        return
+
+    cmds.select(
+        matches[0],
+        replace=True
+    )
+
+    cmds.viewFit()

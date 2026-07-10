@@ -1,19 +1,10 @@
 from utils import maya_utils as mUt
 
+from importlib import reload
+
 from operations.validators import validation_utils as valUtil
-
-
-VALID_SUFFIXES = {
-
-    "geo",
-    "jnt",
-    "ctrl",
-    "grp",
-    "loc",
-    "cam",
-    "lgt",
-    "drv"
-}
+from config import namingConventions
+reload(namingConventions)
 
 
 def find_missing_suffix_issues(nodes):
@@ -29,7 +20,7 @@ def find_missing_suffix_issues(nodes):
         if len(parts) != 2:
             continue
 
-        if parts[-1] in VALID_SUFFIXES:
+        if parts[-1] in namingConventions.KNOWN_SUFFIXES:
             continue
 
         issues.append(
