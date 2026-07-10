@@ -3,22 +3,40 @@ from importlib import reload
 
 
 MODULES_TO_RELOAD = [
+
+    # UI
+
     "ui.styleSheets",
     "ui.main_window",
-    "ui.color_widget",
-    "ui.rename_widget",
-    "ui.search_widget",
-    "ui.suffix_widget",
-    
+
+    "ui.tabs.rename_tab",
+    "ui.tabs.validation_tab",
+
+    # Operations
+
     "operations.rename",
     "operations.search_replace",
     "operations.colors",
+    "operations.validation",
+
+    # Validators
+
+    "operations.validators.typo_validator",
+    "operations.validators.numbering_validator",
+    "operations.validators.default_name_validator",
+    "operations.validators.underscore_validator",
+    "operations.validators.side_validator",
+
+    # Utils
 
     "utils.undo",
     "utils.Qt_utils",
     "utils.maya_utils",
     "utils.qt",
-    
+    "utils.infoFormatting",
+
+    # Entry
+
     "launcher"
 ]
 
@@ -29,8 +47,11 @@ def run():
     """
 
     for module_name in MODULES_TO_RELOAD:
+
         if module_name in sys.modules:
-            reload(sys.modules[module_name])
+            reload(
+                sys.modules[module_name]
+            )
 
     import launcher
 
