@@ -1,7 +1,12 @@
 from importlib import reload
-from utils.qt import QtWidgets
+from utils.qt import (
+    QtWidgets,
+    QtGui
+)
+from collections import defaultdict
 
 from operations import validation
+from ui.style import coloring
 reload(validation)
 
 
@@ -29,7 +34,7 @@ class ValidationTab(QtWidgets.QWidget):
         self.results_tree = QtWidgets.QTreeWidget()
 
         self.results_tree.setHeaderLabels(
-            ["Validation Results", "Count"]
+            ["Issue", "Value", "Suggestion"]
         )
 
         layout.addWidget(
@@ -48,30 +53,52 @@ class ValidationTab(QtWidgets.QWidget):
 
         report = validation.analyze_selection()
 
-        issues_item = QtWidgets.QTreeWidgetItem(
-            ["Issues"]
-        )
+        categories = defaultdict(list)
 
-        self.results_tree.addTopLevelItem(
-            issues_item
-        )
-        
         for issue in report["issues"]:
 
-            text = (
-                f"[{issue['category']}] "
-                f"{issue['message']} : "
-                f"{issue['value']} -> "
-                f"{issue['suggestion']}"
+            categories[
+                issue["category"]
+            ].append(issue)
+
+        for category, issues in sorted(
+            categories.items()
+        ):
+
+            category_item = QtWidgets.QTreeWidgetItem(
+                [
+                    f"{category.title()} ({len(issues)})"
+                ]
             )
 
-            issues_item.addChild(
-                QtWidgets.QTreeWidgetItem(
+            color = coloring.get_category_color(category)
+
+            category_item.setForeground(
+                0,
+                QtGui.QBrush(color)
+            )
+
+            self.results_tree.addTopLevelItem(
+                category_item
+            )
+
+            for issue in issues:
+
+                issue_item = QtWidgets.QTreeWidgetItem(
                     [
-                        text,
-                        issue["severity"]
+                        issue["message"],
+                        issue["value"],
+                        issue["suggestion"]
                     ]
                 )
-            )
+
+                issue_item.setForeground(
+                    0,
+                    QtGui.QBrush(color)
+                )
+
+                category_item.addChild(
+                    issue_item
+                )
 
         self.results_tree.expandAll()

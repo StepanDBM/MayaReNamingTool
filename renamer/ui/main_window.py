@@ -4,7 +4,7 @@ from utils.qt import (
 )
 from importlib import reload
 
-from ui.styleSheets import MAYA_STYLE
+from ui.style.styleSheets import MAYA_STYLE
 from ui.tabs import rename_tab, validation_tab
 
 reload(rename_tab)

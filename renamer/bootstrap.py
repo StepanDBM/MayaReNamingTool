@@ -6,7 +6,8 @@ MODULES_TO_RELOAD = [
 
     # UI
 
-    "ui.styleSheets",
+    "ui.style.styleSheets",
+    "ui.style.coloring",
     "ui.main_window",
 
     "ui.tabs.rename_tab",
