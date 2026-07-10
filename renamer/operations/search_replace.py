@@ -3,12 +3,13 @@
 import maya.cmds as cmds
 
 from utils.undo import undo_chunk
-from operations.rename import (
-    get_selection,
-    get_hierarchy_selection,
+
+from utils.maya_utils import (
+    get_uuids_from_nodes,
+    get_selected_uuids,
+    get_hierarchy_uuids,
     get_short_name
 )
-
 
 @undo_chunk
 def search_replace(
@@ -23,27 +24,33 @@ def search_replace(
         )
         return
 
-    nodes = []
+    uuids = []
 
     if mode == "selected":
 
-        nodes = get_selection()
+        uuids = get_selected_uuids()
 
     elif mode == "hierarchy":
 
-        descendants, roots = (
-            get_hierarchy_selection()
-        )
-
-        nodes = descendants + roots
+        uuids = get_hierarchy_uuids()
 
     elif mode == "all":
 
-        nodes = cmds.ls(
-            long=True
-        ) or []
+        uuids = get_uuids_from_nodes(
+            cmds.ls(long=True) or []
+        )
 
-    for node in nodes:
+    for uuid in uuids:
+
+        node = cmds.ls(
+            uuid,
+            long=True
+        )
+
+        if not node:
+            continue
+
+        node = node[0]
 
         short_name = get_short_name(node)
 

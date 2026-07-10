@@ -17,9 +17,29 @@ def maya_main_window():
         int(ptr),
         QtWidgets.QWidget
     )
+def get_uuids_from_nodes(nodes):
+
+    return cmds.ls(
+        nodes,
+        uuid=True
+    ) or []
+
 def get_selected_uuids():
     return cmds.ls(
         selection=True,
+        uuid=True
+    ) or []
+
+def get_hierarchy_uuids():
+    """
+    Returns hierarchy nodes as UUIDs in
+    safe rename order (deepest -> shallowest).
+    """
+
+    nodes = get_hierarchy_rename_order()
+
+    return cmds.ls(
+        nodes,
         uuid=True
     ) or []
 
@@ -59,3 +79,32 @@ def get_short_name(node):
     """ ditch DAG path :: |...|group|cube_geo -> cube_geo
     """
     return node.split("|")[-1]
+
+
+
+def sort_nodes_for_rename(nodes):
+    """
+    Deepest DAG nodes first.
+    """
+
+    return sorted(
+        nodes,
+        key=lambda node: node.count("|"),
+        reverse=True
+    )
+def get_hierarchy_rename_order():
+    """
+    Returns selected hierarchy sorted deepest -> shallowest.
+
+    Safe for renaming operations.
+
+    Returns
+    -------
+    list[str]
+    """
+
+    descendants, roots = get_hierarchy_selection()
+
+    return sort_nodes_for_rename(
+        descendants + roots
+    )

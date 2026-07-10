@@ -2,10 +2,11 @@
 import re
 import maya.cmds as cmds
 from utils.undo import undo_chunk
+
 from utils.maya_utils import (
     get_selected_uuids,
+    get_hierarchy_uuids,
     get_selection,
-    get_hierarchy_selection,
     get_short_name
 )
 
@@ -74,22 +75,25 @@ def add_prefix_hierarchy(prefix):
         cmds.warning("Prefix field is empty.")
         return
 
-    descendants, selection = get_hierarchy_selection()
+    uuids = get_hierarchy_uuids()
 
-    # Children first
-    for node in descendants:
+    for uuid in uuids:
 
-        short_name = get_short_name(node)
+        obj = cmds.ls(uuid, long=True)
 
-        cmds.rename(node, f"{prefix}{short_name}")
+        if not obj:
+            continue
 
-    # Then roots
-    for node in selection:
+        obj = obj[0]
 
-        short_name = get_short_name(node)
+        short_name = get_short_name(obj)
 
-        cmds.rename(node, f"{prefix}{short_name}")
-        rename_shapes_for_nodes(get_selection())
+        cmds.rename(
+            obj,
+            f"{prefix}{short_name}"
+        )
+
+    rename_shapes_for_nodes(get_selection())
 
 # Suffix
 @undo_chunk
@@ -118,22 +122,25 @@ def add_suffix_hierarchy(suffix):
         cmds.warning("Suffix field is empty.")
         return
 
-    descendants, selection = get_hierarchy_selection()
-    
-    # Children first
-    for node in descendants:
+    uuids = get_hierarchy_uuids()
 
-        short_name = get_short_name(node)
+    for uuid in uuids:
 
-        cmds.rename(node, f"{short_name}{suffix}")
+        obj = cmds.ls(uuid, long=True)
 
-    # Then roots
-    for node in selection:
+        if not obj:
+            continue
 
-        short_name = get_short_name(node)
+        obj = obj[0]
 
-        cmds.rename(node, f"{short_name}{suffix}")
-        rename_shapes_for_nodes(get_selection())
+        short_name = get_short_name(obj)
+
+        cmds.rename(
+            obj,
+            f"{short_name}{suffix}"
+        )
+
+    rename_shapes_for_nodes(get_selection())
 
 @undo_chunk
 def rename_and_number(
@@ -259,11 +266,16 @@ def strip_namespace():
 @undo_chunk
 def strip_namespace_hierarchy():
 
-    descendants, roots = (get_hierarchy_selection())
+    uuids = get_hierarchy_uuids()
 
-    nodes = descendants + roots
+    for uuid in uuids:
 
-    for obj in nodes:
+        obj = cmds.ls(uuid, long=True)
+
+        if not obj:
+            continue
+
+        obj = obj[0]
 
         short_name = get_short_name(obj)
 
@@ -272,6 +284,9 @@ def strip_namespace_hierarchy():
 
         new_name = short_name.split(":")[-1]
 
-        cmds.rename(obj, new_name)
+        cmds.rename(
+            obj,
+            new_name
+        )
 
     rename_shapes_for_nodes(get_selection())
