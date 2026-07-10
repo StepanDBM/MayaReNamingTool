@@ -41,14 +41,14 @@ def find_possible_typo_issues(nodes):
     )
 
     issues.extend(
-        _find_possible_typos(
+        _find_possible_typos(name,
             prefix_counter,
             category="prefix"
         )
     )
 
     issues.extend(
-        _find_possible_typos(
+        _find_possible_typos(name,
             suffix_counter,
             category="suffix"
         )
@@ -57,7 +57,7 @@ def find_possible_typo_issues(nodes):
     return issues
 
 
-def _find_possible_typos(
+def _find_possible_typos(nodeName,
     counter,
     category
 ):
@@ -97,9 +97,11 @@ def _find_possible_typos(
         issues.append(
             valUtil.build_issue(
                 category=category,
+                node=nodeName,
                 value=name,
                 message="Possible typo",
-                suggestion=suggestion
+                suggestion=suggestion,
+                severity="warning"
             )
         )
 

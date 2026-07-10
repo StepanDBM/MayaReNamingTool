@@ -35,9 +35,11 @@ def find_missing_suffix_issues(nodes):
         issues.append(
             valUtil.build_issue(
                 category="suffix",
+                node=name,
                 value=name,
                 message="Missing naming suffix",
-                suggestion="Add a valid suffix"
+                suggestion="Add a valid suffix",
+                severity="warning"
             )
         )
 

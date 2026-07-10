@@ -7,7 +7,10 @@ from collections import defaultdict
 
 from operations import validation
 from ui.style import coloring
+from config import severityTypes
 reload(validation)
+reload(coloring)
+reload(severityTypes)
 
 
 class ValidationTab(QtWidgets.QWidget):
@@ -21,20 +24,43 @@ class ValidationTab(QtWidgets.QWidget):
 
     def build_ui(self):
 
-        layout = QtWidgets.QVBoxLayout(self)
+        layout = QtWidgets.QVBoxLayout(
+            self
+        )
 
-        self.analyze_btn = QtWidgets.QPushButton(
-            "Analyze Selection"
+        self.analyze_btn = (
+            QtWidgets.QPushButton(
+                "Analyze Selection"
+            )
         )
 
         layout.addWidget(
             self.analyze_btn
         )
 
-        self.results_tree = QtWidgets.QTreeWidget()
+        self.results_tree = (
+            QtWidgets.QTreeWidget()
+        )
 
         self.results_tree.setHeaderLabels(
-            ["Issue", "Value", "Suggestion"]
+            [
+                "Node / Issue",
+                "Severity",
+                "Suggestion"
+            ]
+        )
+
+        self.results_tree.setAlternatingRowColors(
+            True
+        )
+
+        self.results_tree.setUniformRowHeights(
+            True
+        )
+
+        self.results_tree.setColumnWidth(
+            0,
+            300
         )
 
         layout.addWidget(
@@ -53,51 +79,128 @@ class ValidationTab(QtWidgets.QWidget):
 
         report = validation.analyze_selection()
 
-        categories = defaultdict(list)
+        nodes = defaultdict(list)
 
         for issue in report["issues"]:
 
-            categories[
-                issue["category"]
-            ].append(issue)
-
-        for category, issues in sorted(
-            categories.items()
-        ):
-
-            category_item = QtWidgets.QTreeWidgetItem(
-                [
-                    f"{category.title()} ({len(issues)})"
-                ]
+            node = (
+                issue.get("node")
+                or issue["value"]
             )
 
-            color = coloring.get_category_color(category)
+            nodes[node].append(
+                issue
+            )
 
-            category_item.setForeground(
+        sorted_nodes = sorted(
+            nodes.items(),
+            key=lambda item: min(
+                severityTypes.SEVERITY_TYPES[
+                    issue["severity"]
+                ]["priority"]
+                for issue in item[1]
+            )
+        )
+
+        for node_name, issues in sorted_nodes:
+
+            highest_priority = min(
+                severityTypes.SEVERITY_TYPES[
+                    issue["severity"]
+                ]["priority"]
+                for issue in issues
+            )
+
+            highest_severity = next(
+                severity
+                for severity, data in (
+                    severityTypes.SEVERITY_TYPES.items()
+                )
+                if data["priority"]
+                == highest_priority
+            )
+
+            node_color = (
+                coloring.get_severity_color(
+                    highest_severity
+                )
+            )
+
+            node_item = (
+                QtWidgets.QTreeWidgetItem(
+                    [
+                        node_name,
+                        (
+                            f"{len(issues)} "
+                            f"issue(s)"
+                        ),
+                        ""
+                    ]
+                )
+            )
+
+            node_item.setForeground(
                 0,
-                QtGui.QBrush(color)
+                QtGui.QBrush(
+                    node_color
+                )
+            )
+
+            node_item.setForeground(
+                1,
+                QtGui.QBrush(
+                    node_color
+                )
             )
 
             self.results_tree.addTopLevelItem(
-                category_item
+                node_item
             )
 
-            for issue in issues:
+            sorted_issues = sorted(
+                issues,
+                key=lambda issue:
+                severityTypes.SEVERITY_TYPES[
+                    issue["severity"]
+                ]["priority"]
+            )
 
-                issue_item = QtWidgets.QTreeWidgetItem(
-                    [
-                        issue["message"],
-                        issue["value"],
-                        issue["suggestion"]
-                    ]
+            for issue in sorted_issues:
+
+                issue_color = (
+                    coloring.get_severity_color(
+                        issue["severity"]
+                    )
+                )
+
+                issue_item = (
+                    QtWidgets.QTreeWidgetItem(
+                        [
+                            (
+                                f"[{issue['category']}] "
+                                f"{issue['message']}"
+                            ),
+                            issue["severity"],
+                            issue["suggestion"]
+                        ]
+                    )
                 )
 
                 issue_item.setForeground(
                     0,
-                    QtGui.QBrush(color)
+                    QtGui.QBrush(
+                        issue_color
+                    )
                 )
 
-                category_item.addChild(
+                issue_item.setForeground(
+                    1,
+                    QtGui.QBrush(
+                        issue_color
+                    )
+                )
+
+                node_item.addChild(
                     issue_item
                 )
 

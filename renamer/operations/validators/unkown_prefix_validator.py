@@ -38,9 +38,11 @@ def find_unknown_prefix_issues(nodes):
         issues.append(
             valUtil.build_issue(
                 category="prefix",
+                node=name,
                 value=prefix,
                 message="Unknown prefix",
-                suggestion="Use a known prefix"
+                suggestion="Use a known prefix",
+                severity="warning"
             )
         )
 

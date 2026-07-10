@@ -32,8 +32,10 @@ def find_duplicate_name_issues(nodes):
                 value=name,
                 message="Duplicate short name detected",
                 suggestion=(
-                    f"Found {count} nodes with this name"
-                )
+                    f"Found {count} nodes "
+                    f"with this name"
+                ),
+                severity="error"
             )
         )
 

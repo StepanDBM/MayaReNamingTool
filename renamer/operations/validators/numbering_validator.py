@@ -65,11 +65,13 @@ def find_numbering_issues(nodes):
         issues.append(
             valUtil.build_issue(
                 category="numbering",
+                node = name,
                 value=family,
                 message="Missing numbering sequence",
                 suggestion=infoForm.format_number_ranges(
                     missing
-                )
+                ),
+                severity="warning"
             )
         )
 

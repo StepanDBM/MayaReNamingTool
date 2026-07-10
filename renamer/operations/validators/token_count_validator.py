@@ -45,12 +45,14 @@ def find_token_count_issues(nodes):
             issues.append(
                 valUtil.build_issue(
                     category="structure",
+                    node=name,
                     value=name,
                     message="Unexpected token count",
                     suggestion=(
                         f"Expected {expected} tokens, "
                         f"found {token_count}"
-                    )
+                    ),
+                    severity="mind_me"
                 )
             )
 

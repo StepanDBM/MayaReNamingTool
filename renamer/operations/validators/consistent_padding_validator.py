@@ -43,12 +43,14 @@ def find_padding_issues(nodes):
         issues.append(
             valUtil.build_issue(
                 category="numbering",
+                node = name,
                 value=family,
                 message="Inconsistent number padding",
                 suggestion=(
                     f"Found padding sizes: "
                     f"{sorted(paddings)}"
-                )
+                ),
+                severity="mind_me"
             )
         )
 

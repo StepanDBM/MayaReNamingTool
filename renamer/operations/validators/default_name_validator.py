@@ -40,12 +40,14 @@ def find_default_name_issues(nodes):
         issues.append(
             valUtil.build_issue(
                 category="naming",
+                node=name,
                 value=name,
                 message="Default Maya name detected",
                 suggestion=(
                     "Rename object using "
                     "the project naming convention"
-                )
+                ),
+                severity="warning"
             )
         )
 

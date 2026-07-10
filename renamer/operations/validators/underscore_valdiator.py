@@ -39,13 +39,13 @@ def find_empty_token_issues(nodes):
         if "" not in parts:
             continue
 
-        issues.append(
-            valUtil.build_issue(
-                category="token",
-                value=name,
-                message="Empty naming token detected",
-                suggestion="Remove empty sections"
-            )
+        valUtil.build_issue(
+            category="underscore",
+            node=name,
+            value=name,
+            message="Double underscore detected",
+            suggestion="Remove redundant separators",
+            severity="warning"
         )
 
     return issues

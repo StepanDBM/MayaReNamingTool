@@ -1,5 +1,15 @@
 from utils.qt import QtGui
 
+from config import severityTypes
+
+
+def get_severity_color(severity):
+
+    color = severityTypes.SEVERITY_TYPES[
+        severity
+    ]["color"]
+
+    return QtGui.QColor(*color)
 def get_category_color(category):
 
     colors = {

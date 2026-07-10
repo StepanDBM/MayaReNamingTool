@@ -5,7 +5,7 @@ from importlib import reload
 MODULES_TO_RELOAD = [
 
     # UI
-
+    "config.severityTypes",
     "ui.style.styleSheets",
     "ui.style.coloring",
     "ui.main_window",

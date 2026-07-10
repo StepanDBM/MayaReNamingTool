@@ -51,7 +51,8 @@ def find_unknown_suffix_issues(nodes):
                 category="suffix",
                 value=suffix,
                 message="Unknown suffix",
-                suggestion="Use a known suffix"
+                suggestion="Use a known suffix",
+                severity="warning"
             )
         )
 

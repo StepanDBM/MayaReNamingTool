@@ -47,7 +47,8 @@ def find_side_naming_issues(nodes):
                 category="side",
                 value="L / Left",
                 message="Mixed left-side naming convention",
-                suggestion="Use either L or Left consistently"
+                suggestion="Use either L or Left consistently",
+                severity="warning"
             )
         )
 
@@ -56,9 +57,11 @@ def find_side_naming_issues(nodes):
         issues.append(
             valUtil.build_issue(
                 category="side",
+                node = name,
                 value="R / Right",
                 message="Mixed right-side naming convention",
-                suggestion="Use either R or Right consistently"
+                suggestion="Use either R or Right consistently",
+                severity="warning"
             )
         )
 

@@ -1,3 +1,32 @@
+""""
+Summary of Severities:
+    Error
+    -----
+    duplicate_name
+    type
+
+    Warning
+    -------
+    prefix typo
+    suffix typo
+    missing numbering
+    default Maya names
+    double underscores
+    empty token
+    side inconsistency
+    unknown suffix
+    unknown prefix
+    missing suffix
+
+    MindMe
+    ------
+    padding
+    empty groups
+    root count
+    token count consistency
+
+"""
+
 from importlib import reload
 
 from utils import maya_utils as mUt

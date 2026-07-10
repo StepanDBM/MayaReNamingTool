@@ -42,12 +42,17 @@ def find_type_issues(nodes):
         issues.append(
             valUtil.build_issue(
                 category="type",
-                value=name,
+                node=name,
+                value=current_suffix,
                 message="Node type naming mismatch",
                 suggestion=(
                     f"Object type: "
-                    f"{expected_suffix} and '_{expected_suffix}'is expected."
-                )
+                    f"{expected_suffix} "
+                    f"and "
+                    f"'_{expected_suffix}' "
+                    f"is expected."
+                ),
+                severity="error"
             )
         )
 

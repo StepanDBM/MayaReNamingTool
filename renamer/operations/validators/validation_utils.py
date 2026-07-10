@@ -3,12 +3,14 @@ def build_issue(
     value,
     message,
     suggestion,
-    severity="warning"
+    severity="warning",
+    node=None
 ):
-    
+
     return {
         "category": category,
         "severity": severity,
+        "node": node,
         "value": value,
         "message": message,
         "suggestion": suggestion
