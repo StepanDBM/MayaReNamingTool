@@ -704,6 +704,7 @@ class ValidationTab(QtWidgets.QWidget):
         self.results_tree.clear()
 
         report = validation.analyze_selection()
+        print(report)
         self.update_summary(
             report["issues"]
         )

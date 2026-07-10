@@ -11,7 +11,10 @@ MODULES_TO_RELOAD = [
     "ui.main_window",
 
     "ui.tabs.rename_tab",
+    "ui.tabs.recolors_tab",
     "ui.tabs.validation_tab",
+
+    "ui.widgets.collapsibleSection",
 
     # Operations
 

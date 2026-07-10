@@ -66,6 +66,14 @@ def analyze_selection():
 
     if not nodes:
         nodes = mUt.get_all_naming_nodes()
+        print(
+            "Nodes analyzed:",
+            len(nodes)
+        )
+
+        print(
+            nodes[:10]
+        )
 
     if not nodes:
         return report

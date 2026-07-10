@@ -7,7 +7,6 @@ from utils import maya_utils as mUt
 from operations.validators import validation_utils as valUtil
 reload(valUtil)
 
-
 def find_possible_typo_issues(nodes):
 
     issues = []
@@ -15,22 +14,26 @@ def find_possible_typo_issues(nodes):
     prefixes = []
     suffixes = []
 
+    prefix_nodes = {}
+    suffix_nodes = {}
+
     for node in nodes:
 
-        name = mUt.get_short_name(node)
+        node_name = mUt.get_short_name(node)
 
-        parts = name.split("_")
+        parts = node_name.split("_")
 
         if len(parts) < 2:
             continue
 
-        prefixes.append(
-            parts[0]
-        )
+        prefix = parts[0]
+        suffix = parts[-1]
 
-        suffixes.append(
-            parts[-1]
-        )
+        prefixes.append(prefix)
+        suffixes.append(suffix)
+
+        prefix_nodes[prefix] = node_name
+        suffix_nodes[suffix] = node_name
 
     prefix_counter = Counter(
         prefixes
@@ -41,15 +44,17 @@ def find_possible_typo_issues(nodes):
     )
 
     issues.extend(
-        _find_possible_typos(name,
+        _find_possible_typos(
             prefix_counter,
+            prefix_nodes,
             category="prefix"
         )
     )
 
     issues.extend(
-        _find_possible_typos(name,
+        _find_possible_typos(
             suffix_counter,
+            suffix_nodes,
             category="suffix"
         )
     )
@@ -57,8 +62,9 @@ def find_possible_typo_issues(nodes):
     return issues
 
 
-def _find_possible_typos(nodeName,
+def _find_possible_typos(
     counter,
+    node_lookup,
     category
 ):
 
@@ -97,7 +103,7 @@ def _find_possible_typos(nodeName,
         issues.append(
             valUtil.build_issue(
                 category=category,
-                node=nodeName,
+                node=node_lookup.get(name),
                 value=name,
                 message="Possible typo",
                 suggestion=suggestion,

@@ -10,6 +10,7 @@ def find_padding_issues(nodes):
     issues = []
 
     families = defaultdict(set)
+    family_nodes = {}
 
     for node in nodes:
 
@@ -33,6 +34,11 @@ def find_padding_issues(nodes):
                 len(part)
             )
 
+            family_nodes.setdefault(
+                family,
+                name
+            )
+
             break
 
     for family, paddings in families.items():
@@ -43,7 +49,7 @@ def find_padding_issues(nodes):
         issues.append(
             valUtil.build_issue(
                 category="numbering",
-                node = name,
+                node=family_nodes[family],
                 value=family,
                 message="Inconsistent number padding",
                 suggestion=(
