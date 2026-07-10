@@ -49,6 +49,17 @@ def get_selection():
         long=True
     ) or []
 
+def get_naming_nodes():
+
+    return [
+        node
+        for node in get_selection()
+        if not cmds.objectType(
+            node,
+            isAType="shape"
+        )
+    ]
+
 def list_relatives(someTransform):
     return cmds.listRelatives(
         someTransform,

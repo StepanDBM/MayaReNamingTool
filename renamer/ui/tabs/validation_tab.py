@@ -55,13 +55,13 @@ class ValidationTab(QtWidgets.QWidget):
         self.results_tree.addTopLevelItem(
             issues_item
         )
-        print(report)
+        
         for issue in report["issues"]:
 
             text = (
                 f"[{issue['category']}] "
                 f"{issue['message']} : "
-                f"{issue['name']} -> "
+                f"{issue['value']} -> "
                 f"{issue['suggestion']}"
             )
 

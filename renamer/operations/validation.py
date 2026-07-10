@@ -1,15 +1,14 @@
-from collections import Counter
+from collections import Counter, defaultdict
 from difflib import get_close_matches
 
-from utils.maya_utils import (
-    get_selection,
-    get_short_name
-)
+from utils import maya_utils as mUt
+
+from utils import infoFormatting as infoForm
 
 
 def analyze_selection():
 
-    nodes = get_selection()
+    nodes = mUt.get_naming_nodes()
 
     report = {
         "issues": []
@@ -23,7 +22,7 @@ def analyze_selection():
 
     for node in nodes:
 
-        name = get_short_name(node)
+        name = mUt.get_short_name(node)
 
         parts = name.split("_")
 
@@ -35,8 +34,6 @@ def analyze_selection():
 
     prefix_counter = Counter(prefixes)
     suffix_counter = Counter(suffixes)
-    print("PREFIXES:", prefix_counter)
-    print("SUFFIXES:", suffix_counter)
     report["issues"].extend(
         find_possible_typos(
             prefix_counter,
@@ -50,6 +47,10 @@ def analyze_selection():
             category="suffix"
         )
     )
+    report["issues"].extend(
+        find_numbering_issues(nodes)
+    )
+    print(report)
 
     return report
 
@@ -93,9 +94,74 @@ def find_possible_typos(
             {
                 "category": category,
                 "severity": "warning",
-                "name": name,
+                "value": name,
                 "message": "Possible typo",
                 "suggestion": suggestion,
+            }
+        )
+
+    return issues
+
+def find_numbering_issues(nodes):
+
+    issues = []
+
+    families = defaultdict(list)
+
+    for node in nodes:
+
+        name = mUt.get_short_name(node)
+
+        parts = name.split("_")
+
+        for index, part in enumerate(parts):
+
+            if not part.isdigit():
+                continue
+
+            family_parts = parts[:]
+            family_parts[index] = "*"
+
+            family = "_".join(
+                family_parts
+            )
+
+            families[family].append(
+                int(part)
+            )
+
+            break
+
+    for family, numbers in families.items():
+
+        if len(numbers) < 2:
+            continue
+
+        numbers = sorted(
+            set(numbers)
+        )
+
+        expected = range(
+            numbers[0],
+            numbers[-1] + 1
+        )
+
+        missing = [
+            number
+            for number in expected
+            if number not in numbers
+        ]
+
+        if not missing:
+            continue
+
+        issues.append(
+            {
+                "category": "numbering",
+                "severity": "warning",
+                "value": family,
+                "message": "Missing numbering sequence",
+                "suggestion": infoForm.format_number_ranges(missing)
             }
         )
 
