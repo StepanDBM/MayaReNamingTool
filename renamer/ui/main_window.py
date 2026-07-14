@@ -18,7 +18,6 @@ reload(validation_tab)
 reload(recolors_tab)
 reload(collSect)
 
-
 from utils.qt import get_environment_info
 
 
@@ -39,11 +38,8 @@ class RenamerMainWindow(QtWidgets.QWidget):
         )
 
         self.setWindowTitle(self.WINDOW_TITLE)
-
         self.setMinimumWidth(340)
-
         self.setWindowFlags(QtCore.Qt.Window)
-
         self.setStyleSheet(MAYA_STYLE)
 
         self.build_ui()
@@ -57,13 +53,11 @@ class RenamerMainWindow(QtWidgets.QWidget):
         print(self.height())
 
         if width >= 800:
-
             self.validation_tab.show()
             self.validation_tab.filters_widget.show()
             self.validation_tab.rules_widget.show()
 
         elif width >= 580:
-
             self.validation_tab.show()
             self.validation_tab.filters_widget.hide()
             self.validation_tab.rules_widget.hide()
@@ -108,28 +102,21 @@ class RenamerMainWindow(QtWidgets.QWidget):
 
         layout = QtWidgets.QVBoxLayout(self)
 
-        self.main_splitter = QtWidgets.QSplitter(
-            QtCore.Qt.Horizontal
-        )
+        self.main_splitter = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
 
-        layout.addWidget(
-            self.main_splitter
-        )
+        layout.addWidget(self.main_splitter)
 
         self.left_widget = QtWidgets.QWidget()
 
         self.left_widget.setMinimumWidth(320)
         self.left_widget.setMaximumWidth(320)
 
-        left_layout = QtWidgets.QVBoxLayout(
-            self.left_widget
-        )
-
-        left_layout.setContentsMargins(
-            0, 0, 0, 0
-        )
-
+        left_layout = QtWidgets.QVBoxLayout(self.left_widget)
+        left_layout.setContentsMargins(0, 0, 0, 0)
         left_layout.setSpacing(2)
+        left_layout.setAlignment(
+            QtCore.Qt.AlignTop
+        )
 
         # -------------------------
         # RESTORE COLLAPSIBLE STATE
@@ -157,13 +144,9 @@ class RenamerMainWindow(QtWidgets.QWidget):
         # TABS
         # -------------------------
 
-        self.rename_tab = (
-            rename_tab.RenameTab()
-        )
+        self.rename_tab = (rename_tab.RenameTab())
 
-        self.recolors_tab = (
-            recolors_tab.RecolorsTab()
-        )
+        self.recolors_tab = (recolors_tab.RecolorsTab())
 
         # -------------------------
         # COLLAPSIBLE SECTIONS
@@ -193,17 +176,9 @@ class RenamerMainWindow(QtWidgets.QWidget):
             )
         )
 
-        left_layout.addWidget(
-            self.rename_section
-        )
-
-        left_layout.addWidget(
-            self.recolor_section
-        )
-
-        left_layout.addWidget(
-            self.utilities_section
-        )
+        left_layout.addWidget(self.rename_section)
+        left_layout.addWidget(self.recolor_section)
+        left_layout.addWidget(self.utilities_section)
 
         left_layout.addStretch()
 
@@ -211,13 +186,9 @@ class RenamerMainWindow(QtWidgets.QWidget):
         # RIGHT SIDE
         # -------------------------
 
-        self.validation_tab = (
-            validation_tab.ValidationTab()
-        )
+        self.validation_tab = (validation_tab.ValidationTab())
 
-        self.validation_tab.setMinimumWidth(
-            0
-        )
+        self.validation_tab.setMinimumWidth(0)
 
         self.validation_tab.setSizePolicy(
             QtWidgets.QSizePolicy.Expanding,
@@ -228,56 +199,28 @@ class RenamerMainWindow(QtWidgets.QWidget):
         # SPLITTER
         # -------------------------
 
-        self.main_splitter.addWidget(
-            self.left_widget
-        )
+        self.main_splitter.addWidget(self.left_widget)
+        self.main_splitter.addWidget(self.validation_tab)
 
-        self.main_splitter.addWidget(
-            self.validation_tab
-        )
-
-        self.main_splitter.setStretchFactor(
-            0,
-            0
-        )
-
-        self.main_splitter.setStretchFactor(
-            1,
-            1
-        )
+        self.main_splitter.setStretchFactor(0, 0)
+        self.main_splitter.setStretchFactor(1, 1)
 
         # -------------------------
         # RESTORE SETTINGS
         # -------------------------
 
-        splitter_state = self.settings.value(
-            "mainSplitterState"
-        )
-
-        geometry = self.settings.value(
-            "windowGeometry"
-        )
+        splitter_state = self.settings.value("mainSplitterState")
+        geometry = self.settings.value("windowGeometry")
 
         if geometry:
-
             self.restoreGeometry(
                 geometry
             )
 
         else:
-
-            self.resize(
-                1000,
-                640
-            )
-
-            screen = (
-                QtWidgets.QApplication.primaryScreen()
-            )
-
-            screen_geometry = (
-                screen.availableGeometry()
-            )
+            self.resize(1000, 640)
+            screen = (QtWidgets.QApplication.primaryScreen())
+            screen_geometry = (screen.availableGeometry())
 
             self.move(
                 screen_geometry.center()
@@ -285,7 +228,4 @@ class RenamerMainWindow(QtWidgets.QWidget):
             )
 
         if splitter_state:
-
-            self.main_splitter.restoreState(
-                splitter_state
-            )
+            self.main_splitter.restoreState(splitter_state)

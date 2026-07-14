@@ -545,7 +545,7 @@ class RenameTab(QtWidgets.QWidget):
             self.apply_search_btn
         )
 
-        main_layout.addStretch()
+        #main_layout.addStretch()
 
     def create_connections(self):
 

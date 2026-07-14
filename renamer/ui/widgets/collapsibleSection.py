@@ -20,9 +20,11 @@ class CollapsibleSection(QtWidgets.QWidget):
         settings_key=None,
         parent=None
     ):
+
         super().__init__(parent)
 
         self.title = title
+        self.settings_key = settings_key
         self.content_widget = content_widget
 
         expanded_color = lighter_color(
@@ -37,6 +39,10 @@ class CollapsibleSection(QtWidgets.QWidget):
         )
 
         layout.setSpacing(0)
+
+        # -------------------------
+        # Header
+        # -------------------------
 
         self.toggle_btn = QtWidgets.QPushButton()
 
@@ -63,7 +69,6 @@ class CollapsibleSection(QtWidgets.QWidget):
                 border: 1px solid #144550;
 
                 text-align: left;
-
                 padding-left: 6px;
 
                 font-weight: bold;
@@ -91,46 +96,153 @@ class CollapsibleSection(QtWidgets.QWidget):
             self.toggle_btn
         )
 
+        # -------------------------
+        # Animated Wrapper
+        # -------------------------
+
+        self.content_area = QtWidgets.QWidget()
+
+        area_layout = QtWidgets.QVBoxLayout(
+            self.content_area
+        )
+
+        area_layout.setContentsMargins(
+            0, 0, 0, 0
+        )
+
+        area_layout.setSpacing(0)
+
         self.content_widget.setSizePolicy(
             QtWidgets.QSizePolicy.Expanding,
             QtWidgets.QSizePolicy.Preferred
         )
 
-        layout.addWidget(
+        area_layout.addWidget(
             self.content_widget
         )
 
-        self.content_widget.setVisible(
-            expanded
+        layout.addWidget(
+            self.content_area
         )
-        self.settings_key = settings_key
+
+        self.expanded_height = (
+            self.content_area.sizeHint().height()
+        )
+
+        # -------------------------
+        # Animation
+        # -------------------------
+
+        self.animation = QtCore.QPropertyAnimation(
+            self.content_area,
+            b"maximumHeight"
+        )
+
+        self.animation.setDuration(
+            150
+        )
+
+        self.animation.setEasingCurve(
+            QtCore.QEasingCurve.OutCubic
+        )
+
+        self.animation.finished.connect(
+            self._on_animation_finished
+        )
+
+        # -------------------------
+        # Initial State
+        # -------------------------
+
+        if expanded:
+
+            self.content_area.show()
+
+            self.content_area.setMaximumHeight(
+                self.expanded_height
+            )
+
+        else:
+
+            self.content_area.setMaximumHeight(
+                0
+            )
+
+            self.content_area.hide()
 
     def update_header(self):
 
         if self.toggle_btn.isChecked():
 
             self.toggle_btn.setText(
-                f"{self.title}"
+                f"▼  {self.title}"
             )
 
         else:
 
             self.toggle_btn.setText(
-                f"{self.title}"
+                f"▶  {self.title}"
             )
 
     def is_expanded(self):
 
         return self.toggle_btn.isChecked()
-    
+
+    def _on_animation_finished(self):
+
+        if not self.toggle_btn.isChecked():
+
+            self.content_area.hide()
+
     def toggle(self):
 
         expanded = (
             self.toggle_btn.isChecked()
         )
+        print(
+            self.title,
+            "cached:",
+            self.expanded_height
+        )
 
-        self.content_widget.setVisible(
-            expanded
+        print(
+            self.title,
+            "actual:",
+            self.content_area.sizeHint().height()
         )
 
         self.update_header()
+
+        self.animation.stop()
+
+        if expanded:
+
+            self.content_area.show()
+
+            self.animation.setStartValue(
+                self.content_area.maximumHeight()
+            )
+
+            target_height = (
+                self.content_area.layout().sizeHint().height()
+            )
+
+            self.animation.setEndValue(
+                target_height
+            )
+
+        else:
+
+            self.animation.setStartValue(
+                self.content_area.maximumHeight()
+            )
+
+            target_height = (
+                self.content_area.layout().sizeHint().height()
+            )
+
+            self.animation.setEndValue(
+                target_height
+            )
+
+        self.animation.start()

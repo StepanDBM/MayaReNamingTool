@@ -83,7 +83,9 @@ class RecolorsTab(QtWidgets.QWidget):
         main_layout.addWidget(self.color_label)
 
         self.color_dialog_btn = (
-            QtWidgets.QPushButton("Pick Color")
+            QtWidgets.QPushButton(
+                "Pick Color"
+            )
         )
 
         self.r_spin = QtWidgets.QSpinBox()
@@ -95,33 +97,53 @@ class RecolorsTab(QtWidgets.QWidget):
             self.g_spin,
             self.b_spin
         ):
-            spin.setRange(0, 255)
+            spin.setRange(
+                0,
+                255
+            )
+
+            spin.hide()
 
         picker_layout = QtWidgets.QHBoxLayout()
 
-        picker_layout.addWidget(self.color_dialog_btn)
+        self.rgb_label = QtWidgets.QLabel(
+            "255, 255, 255"
+        )
 
-        picker_layout.addWidget(QtWidgets.QLabel("R"))
+        self.rgb_label.setAlignment(
+            QtCore.Qt.AlignCenter
+        )
 
-        picker_layout.addWidget(self.r_spin)
-
-        picker_layout.addWidget(QtWidgets.QLabel("G"))
-
-        picker_layout.addWidget(self.g_spin)
-
-        picker_layout.addWidget(QtWidgets.QLabel("B"))
-
-        picker_layout.addWidget(self.b_spin)
+        self.rgb_label.setMinimumWidth(
+            90
+        )
 
         self.color_preview = QtWidgets.QFrame()
 
-        self.color_preview.setFixedSize(40, 20)
+        self.color_preview.setFixedSize(
+            80,
+            24
+        )
 
-        self.color_preview.setFrameShape(QtWidgets.QFrame.Box)
+        self.color_preview.setFrameShape(
+            QtWidgets.QFrame.Box
+        )
 
-        picker_layout.addWidget(self.color_preview)
+        picker_layout.addWidget(
+            self.color_dialog_btn
+        )
 
-        main_layout.addLayout(picker_layout)
+        picker_layout.addWidget(
+            self.rgb_label
+        )
+
+        picker_layout.addWidget(
+            self.color_preview
+        )
+
+        main_layout.addLayout(
+            picker_layout
+        )
 
         color_grid = QtWidgets.QGridLayout()
 
@@ -240,7 +262,7 @@ class RecolorsTab(QtWidgets.QWidget):
             color_actions
         )
 
-        main_layout.addStretch()
+        #main_layout.addStretch()
 
     def create_connections(self):
 
