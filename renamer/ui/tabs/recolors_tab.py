@@ -1,5 +1,5 @@
 # ui/tabs/recolors_tab.py
-
+from ui.style.styleSheets import MAYA_STYLE
 from utils.qt import (
     QtWidgets,
     QtCore,
@@ -25,16 +25,55 @@ class RecolorsTab(QtWidgets.QWidget):
 
     def pick_color(self):
 
-        color = QtWidgets.QColorDialog.getColor()
+        initial_color = QtGui.QColor(
+            self.r_spin.value(),
+            self.g_spin.value(),
+            self.b_spin.value()
+        )
+
+        dialog = QtWidgets.QColorDialog(
+            initial_color,
+            self
+        )
+
+        dialog.setWindowTitle(
+            "Pick Color"
+        )
+
+        dialog.setOption(
+            QtWidgets.QColorDialog.DontUseNativeDialog,
+            True
+        )
+
+        dialog.setStyleSheet(
+            MAYA_STYLE
+            + """
+            QColorDialog
+            {
+                background-color: #3a3a3a;
+            }
+            """
+        )
+
+        if dialog.exec_() != QtWidgets.QDialog.Accepted:
+            return
+
+        color = dialog.currentColor()
 
         if not color.isValid():
             return
 
-        self.r_spin.setValue(color.red())
+        self.r_spin.setValue(
+            color.red()
+        )
 
-        self.g_spin.setValue(color.green())
+        self.g_spin.setValue(
+            color.green()
+        )
 
-        self.b_spin.setValue(color.blue())
+        self.b_spin.setValue(
+            color.blue()
+        )
 
     def apply_color(self):
 
@@ -70,17 +109,48 @@ class RecolorsTab(QtWidgets.QWidget):
             """
         )
 
+        self.rgb_label.setText(
+            f"[{color.red()}, "
+            f"{color.green()}, "
+            f"{color.blue()}]"
+        )
+    def set_color_from_text(self):
+
+        text = self.rgb_label.text().strip()
+
+        try:
+
+            text = text.replace(
+                "[",
+                ""
+            ).replace(
+                "]",
+                ""
+            )
+
+            r, g, b = [
+                int(value.strip())
+                for value in text.split(",")
+            ]
+
+            r = max(0, min(255, r))
+            g = max(0, min(255, g))
+            b = max(0, min(255, b))
+
+            self.r_spin.setValue(r)
+            self.g_spin.setValue(g)
+            self.b_spin.setValue(b)
+
+        except Exception:
+
+            self.update_color_preview()
     def build_ui(self):
 
         main_layout = QtWidgets.QVBoxLayout(self)
 
-        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setContentsMargins(6, 6, 6, 6)
 
         main_layout.setSpacing(2)
-
-        self.color_label = QtWidgets.QLabel("Color")
-
-        main_layout.addWidget(self.color_label)
 
         self.color_dialog_btn = (
             QtWidgets.QPushButton(
@@ -106,8 +176,14 @@ class RecolorsTab(QtWidgets.QWidget):
 
         picker_layout = QtWidgets.QHBoxLayout()
 
-        self.rgb_label = QtWidgets.QLabel(
-            "255, 255, 255"
+        self.rgb_label = QtWidgets.QLineEdit()
+
+        self.rgb_label.setText(
+            "[255, 255, 255]"
+        )
+
+        self.rgb_label.setMaximumWidth(
+            95
         )
 
         self.rgb_label.setAlignment(
@@ -115,7 +191,7 @@ class RecolorsTab(QtWidgets.QWidget):
         )
 
         self.rgb_label.setMinimumWidth(
-            90
+            80
         )
 
         self.color_preview = QtWidgets.QFrame()
@@ -136,7 +212,9 @@ class RecolorsTab(QtWidgets.QWidget):
         picker_layout.addWidget(
             self.rgb_label
         )
-
+        self.rgb_label.editingFinished.connect(
+            self.set_color_from_text
+        )
         picker_layout.addWidget(
             self.color_preview
         )
@@ -153,11 +231,13 @@ class RecolorsTab(QtWidgets.QWidget):
             "#ff7a2c",
             "#ffff64",
             "#87ff47",
+            "#ffffff",
             "#59ffe7",
             "#4fa0ff",
             "#ff71b4",
             "#c956e5",
             "#7633e5",
+            "#000000",
         ]
 
         self.color_buttons = []
@@ -202,10 +282,22 @@ class RecolorsTab(QtWidgets.QWidget):
                 """
             )
 
+            btn.setMinimumWidth(
+                0
+            )
+
+            btn.setSizePolicy(
+                QtWidgets.QSizePolicy.Expanding,
+                QtWidgets.QSizePolicy.Fixed
+            )
+
+            row = len(self.color_buttons) // 6
+            column = len(self.color_buttons) % 6
+
             color_grid.addWidget(
                 btn,
-                0,
-                len(self.color_buttons)
+                row,
+                column
             )
 
             self.color_buttons.append(
@@ -216,46 +308,81 @@ class RecolorsTab(QtWidgets.QWidget):
             color_grid
         )
 
-        color_actions = QtWidgets.QHBoxLayout()
-
-        self.apply_color_btn = (
-            QtWidgets.QPushButton(
-                "Apply Color"
-            )
+        spacer = QtWidgets.QWidget()
+        spacer.setFixedHeight(8)
+        
+        main_layout.addWidget(
+            spacer
         )
 
-        self.reset_color_btn = (
-            QtWidgets.QPushButton(
-                "Reset Color"
-            )
+        color_actions = QtWidgets.QGridLayout()
+
+        color_actions.setContentsMargins(
+            0, 0, 0, 0
         )
 
-        self.dview_btn = (
-            QtWidgets.QPushButton(
-                "DView Color"
-            )
+        color_actions.setHorizontalSpacing(
+            3
         )
 
-        self.doutliner_btn = (
-            QtWidgets.QPushButton(
-                "DOut Color"
-            )
+        color_actions.setVerticalSpacing(
+            3
         )
 
-        color_actions.addWidget(
-            self.apply_color_btn
+        self.apply_color_btn = QtWidgets.QPushButton(
+            "Apply Color"
         )
 
-        color_actions.addWidget(
-            self.reset_color_btn
+        self.reset_color_btn = QtWidgets.QPushButton(
+            "Reset Color"
         )
 
-        color_actions.addWidget(
-            self.dview_btn
+        self.dview_btn = QtWidgets.QPushButton(
+            "DView Color"
         )
 
-        color_actions.addWidget(
+        self.doutliner_btn = QtWidgets.QPushButton(
+            "DOut Color"
+        )
+
+        for button in (
+            self.apply_color_btn,
+            self.reset_color_btn,
+            self.dview_btn,
             self.doutliner_btn
+        ):
+
+            button.setMinimumWidth(
+                0
+            )
+
+            button.setSizePolicy(
+                QtWidgets.QSizePolicy.Expanding,
+                QtWidgets.QSizePolicy.Fixed
+            )
+
+        color_actions.addWidget(
+            self.apply_color_btn,
+            0,
+            0
+        )
+
+        color_actions.addWidget(
+            self.reset_color_btn,
+            0,
+            1
+        )
+
+        color_actions.addWidget(
+            self.dview_btn,
+            1,
+            0
+        )
+
+        color_actions.addWidget(
+            self.doutliner_btn,
+            1,
+            1
         )
 
         main_layout.addLayout(
@@ -269,7 +396,14 @@ class RecolorsTab(QtWidgets.QWidget):
         self.color_dialog_btn.clicked.connect(
             self.pick_color
         )
+        self.color_dialog_btn.setMinimumWidth(
+            0
+        )
 
+        self.color_dialog_btn.setSizePolicy(
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Fixed
+        )
         self.dview_btn.clicked.connect(
             lambda:
             colors.apply_viewport_color(

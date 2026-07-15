@@ -43,6 +43,23 @@ def get_hierarchy_uuids():
         uuid=True
     ) or []
 
+def get_nodes_from_uuids(uuids):
+
+    nodes = []
+
+    for uuid in uuids:
+
+        matches = cmds.ls(
+            uuid,
+            long=True
+        ) or []
+
+        nodes.extend(
+            matches
+        )
+
+    return nodes
+
 def get_selection():
     return cmds.ls(
         selection=True,
@@ -168,3 +185,31 @@ def frame_object_on_name(node_name):
     )
 
     cmds.viewFit()
+
+
+def strip_namespace_from_name(name):
+
+    return name.rsplit(
+        ":",
+        1
+    )[-1]
+
+
+def get_short_name_without_namespace(node):
+
+    short_name = get_short_name(
+        node
+    )
+
+    return strip_namespace_from_name(
+        short_name
+    )
+
+
+def has_namespace(node):
+
+    short_name = get_short_name(
+        node
+    )
+
+    return ":" in short_name

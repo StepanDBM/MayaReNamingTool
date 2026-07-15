@@ -8,51 +8,68 @@ RULES_FILE = os.path.join(
     "namingRules.json"
 )
 
+
 DEFAULT_RULES = {
     "categories": {
         "duplicate_name": {
             "enabled": True,
-            "label": "Duplicate Names"
+            "label": "Duplicate Names",
+            "solvable": False
         },
         "hierarchy": {
             "enabled": True,
-            "label": "Hierarchy"
+            "label": "Hierarchy",
+            "solvable": False
         },
         "naming": {
             "enabled": True,
-            "label": "Naming"
+            "label": "Naming",
+            "solvable": False
         },
         "numbering": {
             "enabled": True,
-            "label": "Numbering"
+            "label": "Numbering",
+            "solvable": False
         },
         "prefix": {
             "enabled": True,
-            "label": "Prefix"
+            "label": "Prefix",
+            "solvable": True
         },
         "side": {
             "enabled": True,
-            "label": "Side"
+            "label": "Side",
+            "solvable": False
         },
         "structure": {
             "enabled": True,
-            "label": "Structure"
+            "label": "Structure",
+            "solvable": False
         },
         "suffix": {
             "enabled": True,
-            "label": "Suffix"
+            "label": "Suffix",
+            "solvable": True
         },
         "token": {
             "enabled": True,
-            "label": "Token"
+            "label": "Token",
+            "solvable": False
         },
         "type": {
             "enabled": True,
-            "label": "Type"
+            "label": "Type",
+            "solvable": False
         },
         "underscore": {
             "enabled": True,
-            "label": "Underscore"
+            "label": "Underscore",
+            "solvable": True
+        },
+        "namespace": {
+            "enabled": True,
+            "label": "Namespaces",
+            "solvable": True
         }
     },
 
@@ -86,7 +103,8 @@ DEFAULT_RULES = {
         "offs",
         "loc",
         "cam",
-        "lgt"
+        "lgt",
+        "crv"
     ],
 
     "types": {
@@ -100,14 +118,60 @@ DEFAULT_RULES = {
     }
 }
 
+
+def _merge_defaults(defaults, data):
+
+    result = copy.deepcopy(
+        defaults
+    )
+
+    for key, value in data.items():
+
+        if (
+            key in result
+            and isinstance(result[key], dict)
+            and isinstance(value, dict)
+        ):
+
+            result[key] = _merge_defaults(
+                result[key],
+                value
+            )
+
+        else:
+
+            result[key] = value
+
+    return result
+
+
 def load_rules():
+
+    if not os.path.exists(
+        RULES_FILE
+    ):
+
+        restore_default_rules()
 
     with open(
         RULES_FILE,
         "r"
     ) as stream:
 
-        return json.load(stream)
+        loaded_rules = json.load(
+            stream
+        )
+
+    rules = _merge_defaults(
+        DEFAULT_RULES,
+        loaded_rules
+    )
+
+    save_rules(
+        rules
+    )
+
+    return rules
 
 
 def save_rules(rules):
@@ -123,16 +187,18 @@ def save_rules(rules):
             indent=4,
             sort_keys=True
         )
-        import copy
+
 
 def restore_default_rules():
 
+    rules = copy.deepcopy(
+        DEFAULT_RULES
+    )
+
     save_rules(
-        copy.deepcopy(
-            DEFAULT_RULES
-        )
+        rules
     )
 
     return copy.deepcopy(
-        DEFAULT_RULES
+        rules
     )

@@ -1,13 +1,15 @@
 def build_issue(
     category,
-    value,
     message,
     suggestion,
-    severity="warning",
-    node=None
+    severity,
+    node=None,
+    value=None,
+    solver=None,
+    solvable=None
 ):
 
-    return {
+    issue = {
         "category": category,
         "severity": severity,
         "node": node,
@@ -15,3 +17,10 @@ def build_issue(
         "message": message,
         "suggestion": suggestion
     }
+
+    if solver:
+        issue["solver"] = solver
+
+    if solvable is not None:
+        issue["solvable"] = solvable
+    return issue

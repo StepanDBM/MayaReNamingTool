@@ -5,10 +5,11 @@ from difflib import get_close_matches
 from utils import maya_utils as mUt
 
 from operations.validators import validation_utils as valUtil
+
 reload(valUtil)
 
-def find_possible_typo_issues(nodes):
 
+def find_possible_typo_issues(nodes):
     issues = []
 
     prefixes = []
@@ -18,10 +19,12 @@ def find_possible_typo_issues(nodes):
     suffix_nodes = {}
 
     for node in nodes:
-
-        node_name = mUt.get_short_name(node)
-
+        display_name = mUt.get_short_name(node)
+        node_name = (mUt.get_short_name_without_namespace(node))
         parts = node_name.split("_")
+
+        if "" in parts:
+            continue
 
         if len(parts) < 2:
             continue
@@ -31,17 +34,12 @@ def find_possible_typo_issues(nodes):
 
         prefixes.append(prefix)
         suffixes.append(suffix)
+        prefix_nodes.setdefault(prefix, display_name)
+        suffix_nodes.setdefault(suffix, display_name)
 
-        prefix_nodes[prefix] = node_name
-        suffix_nodes[suffix] = node_name
+    prefix_counter = Counter(prefixes)
 
-    prefix_counter = Counter(
-        prefixes
-    )
-
-    suffix_counter = Counter(
-        suffixes
-    )
+    suffix_counter = Counter(suffixes)
 
     issues.extend(
         _find_possible_typos(
@@ -67,29 +65,26 @@ def _find_possible_typos(
     node_lookup,
     category
 ):
-
     issues = []
-
-    names = list(
-        counter.keys()
-    )
+    names = list(counter.keys())
 
     for name in names:
-
         if counter[name] > 1:
             continue
-
         candidates = [
             candidate
             for candidate in names
-            if candidate != name
+            if (
+                candidate != name
+                and counter[candidate] > counter[name]
+            )
         ]
 
         matches = get_close_matches(
             name,
             candidates,
             n=1,
-            cutoff=0.75
+            cutoff=0.65
         )
 
         if not matches:
@@ -103,11 +98,15 @@ def _find_possible_typos(
         issues.append(
             valUtil.build_issue(
                 category=category,
-                node=node_lookup.get(name),
+                node=node_lookup.get(
+                    name
+                ),
                 value=name,
                 message="Possible typo",
                 suggestion=suggestion,
-                severity="warning"
+                severity="warning",
+                solver="replace_token",
+                solvable=True
             )
         )
 

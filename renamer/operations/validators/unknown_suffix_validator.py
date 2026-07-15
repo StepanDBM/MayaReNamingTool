@@ -1,21 +1,10 @@
 from collections import Counter
+from difflib import get_close_matches
 
 from utils import maya_utils as mUt
+from utils.loaders import loadNamingRules as N_Rules
 
 from operations.validators import validation_utils as valUtil
-
-
-VALID_SUFFIXES = {
-
-    "geo",
-    "jnt",
-    "ctrl",
-    "grp",
-    "loc",
-    "cam",
-    "lgt",
-    "drv"
-}
 
 
 def find_unknown_suffix_issues(nodes):
@@ -23,36 +12,66 @@ def find_unknown_suffix_issues(nodes):
     issues = []
 
     suffixes = []
+    suffix_nodes = {}
+
+    rules = N_Rules.load_rules()
+    valid_suffixes = set(rules.get("suffixes", []))
 
     for node in nodes:
 
-        name = mUt.get_short_name(node)
+        display_name = mUt.get_short_name(node)
+        clean_name = mUt.get_short_name_without_namespace(node)
 
-        parts = name.split("_")
+        parts = clean_name.split("_")
 
-        if len(parts) < 2:
+        if "" in parts:
             continue
 
-        suffixes.append(
-            parts[-1]
-        )
+        # Two-token names like char_helmet are missing suffix,
+        # not unknown suffix.
+        if len(parts) < 3:
+            continue
 
-    counter = Counter(
-        suffixes
-    )
+        suffix = parts[-1]
+
+        suffixes.append(suffix)
+        suffix_nodes.setdefault(suffix, display_name)
+
+    counter = Counter(suffixes)
+    all_suffixes = list(counter.keys())
 
     for suffix in counter:
 
-        if suffix in VALID_SUFFIXES:
+        if suffix in valid_suffixes:
+            continue
+
+        # If it looks like a typo, let typo_validator handle it.
+        matches = get_close_matches(
+            suffix,
+            [
+                candidate
+                for candidate in all_suffixes
+                if (
+                    candidate != suffix
+                    and counter[candidate] > counter[suffix]
+                )
+            ],
+            n=1,
+            cutoff=0.75
+        )
+
+        if matches:
             continue
 
         issues.append(
             valUtil.build_issue(
                 category="suffix",
+                node=suffix_nodes.get(suffix),
                 value=suffix,
                 message="Unknown suffix",
                 suggestion="Use a known suffix",
-                severity="warning"
+                severity="warning",
+                solvable=False
             )
         )
 

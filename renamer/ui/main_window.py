@@ -8,7 +8,8 @@ from ui.style.styleSheets import MAYA_STYLE
 from ui.tabs import (
     rename_tab,
     recolors_tab,
-    validation_tab
+    validation_tab,
+    selection_tab
 )
 
 from ui.widgets import collapsibleSection as collSect
@@ -16,11 +17,13 @@ from ui.widgets import collapsibleSection as collSect
 reload(rename_tab)
 reload(validation_tab)
 reload(recolors_tab)
+reload(selection_tab)
 reload(collSect)
 
 from utils.qt import get_environment_info
 
-
+LEFT_SCROLL_WIDTH = 338
+LEFT_CONTENT_WIDTH = 320
 class RenamerMainWindow(QtWidgets.QWidget):
 
     WINDOW_TITLE = (
@@ -38,7 +41,7 @@ class RenamerMainWindow(QtWidgets.QWidget):
         )
 
         self.setWindowTitle(self.WINDOW_TITLE)
-        self.setMinimumWidth(340)
+        self.setMinimumWidth(LEFT_SCROLL_WIDTH+22)
         self.setWindowFlags(QtCore.Qt.Window)
         self.setStyleSheet(MAYA_STYLE)
 
@@ -89,8 +92,8 @@ class RenamerMainWindow(QtWidgets.QWidget):
         )
 
         self.settings.setValue(
-            "utilitiesSectionExpanded",
-            self.utilities_section.is_expanded()
+            "SelectionSectionExpanded",
+            self.selection_section.is_expanded()
         )
 
 
@@ -100,22 +103,86 @@ class RenamerMainWindow(QtWidgets.QWidget):
 
     def build_ui(self):
 
+        LEFT_CONTENT_WIDTH = 320
+        LEFT_SCROLL_WIDTH = 338
+
         layout = QtWidgets.QVBoxLayout(self)
 
-        self.main_splitter = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
+        self.main_splitter = QtWidgets.QSplitter(
+            QtCore.Qt.Horizontal
+        )
 
-        layout.addWidget(self.main_splitter)
+        layout.addWidget(
+            self.main_splitter
+        )
+
+        # ---------------------------------
+        # LEFT SCROLL AREA
+        # ---------------------------------
+
+        self.left_scroll = QtWidgets.QScrollArea()
+
+        self.left_scroll.setWidgetResizable(
+            True
+        )
+
+        self.left_scroll.setHorizontalScrollBarPolicy(
+            QtCore.Qt.ScrollBarAlwaysOff
+        )
+
+        self.left_scroll.setVerticalScrollBarPolicy(
+            QtCore.Qt.ScrollBarAsNeeded
+        )
+
+        self.left_scroll.setFrameShape(
+            QtWidgets.QFrame.NoFrame
+        )
+
+        self.left_scroll.setMinimumWidth(
+            LEFT_SCROLL_WIDTH
+        )
+
+        self.left_scroll.setMaximumWidth(
+            LEFT_SCROLL_WIDTH
+        )
 
         self.left_widget = QtWidgets.QWidget()
 
-        self.left_widget.setMinimumWidth(320)
-        self.left_widget.setMaximumWidth(320)
+        self.left_widget.setMinimumWidth(
+            LEFT_CONTENT_WIDTH
+        )
 
-        left_layout = QtWidgets.QVBoxLayout(self.left_widget)
-        left_layout.setContentsMargins(0, 0, 0, 0)
-        left_layout.setSpacing(2)
+        self.left_widget.setMaximumWidth(
+            LEFT_CONTENT_WIDTH
+        )
+
+        self.left_widget.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed,
+            QtWidgets.QSizePolicy.Minimum
+        )
+
+        left_layout = QtWidgets.QVBoxLayout(
+            self.left_widget
+        )
+
+        left_layout.setContentsMargins(
+            0, 0, 0, 0
+        )
+
+        left_layout.setSpacing(
+            2
+        )
+
         left_layout.setAlignment(
             QtCore.Qt.AlignTop
+        )
+
+        left_layout.setSizeConstraint(
+            QtWidgets.QLayout.SetMinimumSize
+        )
+
+        self.left_scroll.setWidget(
+            self.left_widget
         )
 
         # -------------------------
@@ -134,8 +201,8 @@ class RenamerMainWindow(QtWidgets.QWidget):
             type=bool
         )
 
-        utilities_expanded = self.settings.value(
-            "utilitiesSectionExpanded",
+        selection_expanded = self.settings.value(
+            "selectionSectionExpanded",
             False,
             type=bool
         )
@@ -144,51 +211,66 @@ class RenamerMainWindow(QtWidgets.QWidget):
         # TABS
         # -------------------------
 
-        self.rename_tab = (rename_tab.RenameTab())
-
-        self.recolors_tab = (recolors_tab.RecolorsTab())
+        self.rename_tab = rename_tab.RenameTab()
+        self.recolors_tab = recolors_tab.RecolorsTab()
+        self.selection_tab = selection_tab.SelectionTab()
 
         # -------------------------
         # COLLAPSIBLE SECTIONS
         # -------------------------
 
-        self.rename_section = (
-            collSect.CollapsibleSection(
-                "reName",
-                self.rename_tab,
-                expanded=rename_expanded
-            )
+        self.rename_section = collSect.CollapsibleSection(
+            "reName",
+            self.rename_tab,
+            expanded=rename_expanded
         )
 
-        self.recolor_section = (
-            collSect.CollapsibleSection(
-                "reColors",
-                self.recolors_tab,
-                expanded=recolor_expanded
-            )
+        self.recolor_section = collSect.CollapsibleSection(
+            "reColors",
+            self.recolors_tab,
+            expanded=recolor_expanded
         )
 
-        self.utilities_section = (
-            collSect.CollapsibleSection(
-                "Utilities",
-                QtWidgets.QWidget(),
-                expanded=utilities_expanded
-            )
+        self.selection_section = collSect.CollapsibleSection(
+            "reSelection",
+            self.selection_tab,
+            expanded=selection_expanded
         )
 
-        left_layout.addWidget(self.rename_section)
-        left_layout.addWidget(self.recolor_section)
-        left_layout.addWidget(self.utilities_section)
+        left_layout.addWidget(
+            self.rename_section
+        )
+
+        left_layout.addWidget(
+            self.recolor_section
+        )
+
+        left_layout.addWidget(
+            self.selection_section
+        )
 
         left_layout.addStretch()
+
+        # Important when setWidgetResizable(False)
+        self.left_widget.adjustSize()
+
+        self.left_widget.setMinimumHeight(
+            self.left_widget.sizeHint().height()
+        )
+
+        self.left_scroll.setWidget(
+            self.left_widget
+        )
 
         # -------------------------
         # RIGHT SIDE
         # -------------------------
 
-        self.validation_tab = (validation_tab.ValidationTab())
+        self.validation_tab = validation_tab.ValidationTab()
 
-        self.validation_tab.setMinimumWidth(0)
+        self.validation_tab.setMinimumWidth(
+            0
+        )
 
         self.validation_tab.setSizePolicy(
             QtWidgets.QSizePolicy.Expanding,
@@ -199,28 +281,51 @@ class RenamerMainWindow(QtWidgets.QWidget):
         # SPLITTER
         # -------------------------
 
-        self.main_splitter.addWidget(self.left_widget)
-        self.main_splitter.addWidget(self.validation_tab)
+        self.main_splitter.addWidget(
+            self.left_scroll
+        )
 
-        self.main_splitter.setStretchFactor(0, 0)
-        self.main_splitter.setStretchFactor(1, 1)
+        self.main_splitter.addWidget(
+            self.validation_tab
+        )
+
+        self.main_splitter.setStretchFactor(
+            0,
+            0
+        )
+
+        self.main_splitter.setStretchFactor(
+            1,
+            1
+        )
 
         # -------------------------
         # RESTORE SETTINGS
         # -------------------------
 
-        splitter_state = self.settings.value("mainSplitterState")
-        geometry = self.settings.value("windowGeometry")
+        splitter_state = self.settings.value(
+            "mainSplitterState"
+        )
+
+        geometry = self.settings.value(
+            "windowGeometry"
+        )
 
         if geometry:
+
             self.restoreGeometry(
                 geometry
             )
 
         else:
-            self.resize(1000, 640)
-            screen = (QtWidgets.QApplication.primaryScreen())
-            screen_geometry = (screen.availableGeometry())
+
+            self.resize(
+                1000,
+                640
+            )
+
+            screen = QtWidgets.QApplication.primaryScreen()
+            screen_geometry = screen.availableGeometry()
 
             self.move(
                 screen_geometry.center()
@@ -228,4 +333,7 @@ class RenamerMainWindow(QtWidgets.QWidget):
             )
 
         if splitter_state:
-            self.main_splitter.restoreState(splitter_state)
+
+            self.main_splitter.restoreState(
+                splitter_state
+            )

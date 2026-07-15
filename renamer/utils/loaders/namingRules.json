@@ -2,47 +2,63 @@
     "categories": {
         "duplicate_name": {
             "enabled": true,
-            "label": "Duplicate Names"
+            "label": "Duplicate Names",
+            "solvable": false
         },
         "hierarchy": {
             "enabled": true,
-            "label": "Hierarchy"
+            "label": "Hierarchy",
+            "solvable": false
+        },
+        "namespace": {
+            "enabled": true,
+            "label": "Namespaces",
+            "solvable": true
         },
         "naming": {
             "enabled": true,
-            "label": "Naming"
+            "label": "Naming",
+            "solvable": false
         },
         "numbering": {
             "enabled": true,
-            "label": "Numbering"
+            "label": "Numbering",
+            "solvable": false
         },
         "prefix": {
             "enabled": true,
-            "label": "Prefix"
+            "label": "Prefix",
+            "solvable": true
         },
         "side": {
             "enabled": true,
-            "label": "Side"
+            "label": "Side",
+            "solvable": false
         },
         "structure": {
             "enabled": true,
-            "label": "Structure"
+            "label": "Structure",
+            "solvable": false
         },
         "suffix": {
             "enabled": true,
-            "label": "Suffix"
+            "label": "Suffix",
+            "solvable": true
         },
         "token": {
             "enabled": true,
-            "label": "Token"
+            "label": "Token",
+            "solvable": false
         },
         "type": {
             "enabled": true,
-            "label": "Type"
+            "label": "Type",
+            "solvable": false
         },
         "underscore": {
             "enabled": true,
-            "label": "Underscore"
+            "label": "Underscore",
+            "solvable": true
         }
     },
     "prefixes": [
@@ -73,7 +89,8 @@
         "offs",
         "loc",
         "cam",
-        "lgt"
+        "lgt",
+        "crv"
     ],
     "types": {
         "camera": "cam",

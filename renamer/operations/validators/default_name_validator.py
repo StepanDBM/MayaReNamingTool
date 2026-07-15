@@ -1,38 +1,34 @@
 import re
-
 from utils import maya_utils as mUt
-
 from operations.validators import validation_utils as valUtil
 
 
 DEFAULT_NAME_PATTERNS = [
 
-    r"^pCube\d+$",
-    r"^pSphere\d+$",
-    r"^pCylinder\d+$",
-    r"^pPlane\d+$",
-    r"^pCone\d+$",
-    r"^pTorus\d+$",
+    r"^pCube\d*$",
+    r"^pSphere\d*$",
+    r"^pCylinder\d*$",
+    r"^pPlane\d*$",
+    r"^pCone\d*$",
+    r"^pTorus\d*$",
 
-    r"^polySurface\d+$",
+    r"^polySurface\d*$",
 
-    r"^group\d+$",
+    r"^group\d*$",
 
-    r"^joint\d+$",
+    r"^joint\d*$",
 
-    r"^locator\d+$",
+    r"^locator\d*$",
 
-    r"^nurbsCircle\d+$"
+    r"^nurbsCircle\d*$"
 ]
 
 
 def find_default_name_issues(nodes):
-
     issues = []
-
     for node in nodes:
-
-        name = mUt.get_short_name(node)
+        display_name = mUt.get_short_name(node)
+        name = mUt.get_short_name_without_namespace(node)
 
         if not _is_default_name(name):
             continue
@@ -40,7 +36,7 @@ def find_default_name_issues(nodes):
         issues.append(
             valUtil.build_issue(
                 category="naming",
-                node=name,
+                node=display_name,
                 value=name,
                 message="Default Maya name detected",
                 suggestion=(
@@ -53,11 +49,8 @@ def find_default_name_issues(nodes):
 
     return issues
 
-
 def _is_default_name(name):
-
     for pattern in DEFAULT_NAME_PATTERNS:
-
         if re.match(pattern, name):
             return True
 

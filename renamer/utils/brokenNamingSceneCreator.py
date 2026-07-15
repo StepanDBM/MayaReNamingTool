@@ -281,4 +281,61 @@ cmds.group(
     empty=True,
     name="tail_B_02_ctrl"
 )
+
+# -----------------------------
+# REAL EMPTY GROUP VALIDATION
+# -----------------------------
+
+cmds.group(
+    empty=True,
+    name="character_rig_grp"
+)
+
+cmds.group(
+    empty=True,
+    name="vehicle_wheels_grp"
+)
+
+cmds.group(
+    empty=True,
+    name="props_grp"
+)
+
+cmds.createNode(
+    "transform",
+    name="transform1"
+)
+
+cmds.createNode(
+    "transform",
+    name="transform2"
+)
+
+cmds.createNode(
+    "transform",
+    name="transform3"
+)
+
+cmds.createNode(
+    "transform",
+    name="arm_ctrl"
+)
+
+cmds.createNode(
+    "transform",
+    name="leg_ctrl"
+)
+
+cmds.createNode(
+    "transform",
+    name="spine_crv"
+)
+
+cmds.createNode(
+    "transform",
+    name="faceCurve"
+)
+
+
+
 print("Validation test scene created.")

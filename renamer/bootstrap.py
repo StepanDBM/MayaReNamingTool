@@ -37,6 +37,7 @@ MODULES_TO_RELOAD = [
     "operations.validators.unkown_prefix_validator",
     "operations.validators.empty_group_validator",
     "operations.validators.token_count_validator",
+    "operations.validators.namespace_validator",
 
     # Utils
 

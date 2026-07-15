@@ -107,4 +107,71 @@ QGroupBox::title
     subcontrol-origin: margin;
     left: 10px;
 }
+
+/* Selection / utility buttons */
+
+QPushButton[selectionButton="true"]
+{
+    background-color: #083844;
+    border: 1px solid #144550;
+    padding: 2px;
+    min-height: 18px;
+}
+
+QPushButton[selectionButton="true"]:hover
+{
+    background-color: #0c4b58;
+}
+
+QPushButton[selectionButton="true"]:pressed
+{
+    background-color: #072e37;
+}
+
+QPushButton[selectionWideButton="true"]
+{
+    background-color: #083844;
+    border: 1px solid #144550;
+    padding: 2px;
+    min-height: 18px;
+}
+
+QPushButton[selectionWideButton="true"]:hover
+{
+    background-color: #0c4b58;
+}
+
+QPushButton[selectionWideButton="true"]:pressed
+{
+    background-color: #072e37;
+}
+
+/* Selection preset list */
+
+QListWidget[selectionPresetList="true"]
+{
+    background-color: #2b2b2b;
+    border: 1px solid #4a4a4a;
+    padding: 1px;
+}
+
+QListWidget[selectionPresetList="true"]::item
+{
+    min-height: 16px;
+    padding: 1px 3px;
+}
+
+QListWidget[selectionPresetList="true"]::item:selected
+{
+    background-color: #0c4b58;
+    color: #ffffff;
+}
+
+/* Small section title labels */
+
+QLabel[sectionTitle="true"]
+{
+    color: #dcdcdc;
+    font-weight: bold;
+}
 """

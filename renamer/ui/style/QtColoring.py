@@ -21,22 +21,15 @@ def get_category_color(category):
     colors = {
 
         "prefix": QColor(255, 220, 120),
-
         "suffix": QColor(255, 180, 120),
-
         "numbering": QColor(120, 220, 255),
-
         "type": QColor(255, 120, 120),
-
         "hierarchy": QColor(220, 120, 255),
-
         "side": QColor(180, 255, 180),
-
         "token": QColor(220, 220, 120),
-
         "structure": QColor(150, 200, 255),
-
-        "naming": QColor(180, 180, 180)
+        "naming": QColor(180, 180, 180),
+        "namespace": QColor(120, 255, 220)
     }
 
     return colors.get(
@@ -94,15 +87,10 @@ def apply_severity_color(
     severity=None,
     bold=True
 ):
-
     if severity:
-
-        color = get_severity_color(
-            severity
-        ).name()
+        color = get_severity_color(severity).name()
 
     else:
-
         color = DEFAULT_TEXT_COLOR
 
     style = f"color:{color};"

@@ -44,6 +44,7 @@ from operations.validators import consistent_padding_validator
 from operations.validators import unkown_prefix_validator
 from operations.validators import empty_group_validator
 from operations.validators import token_count_validator
+from operations.validators import namespace_validator
 
 
 def analyze_selection():
@@ -61,6 +62,7 @@ def analyze_selection():
     reload(unkown_prefix_validator)
     reload(empty_group_validator)
     reload(token_count_validator)
+    reload(namespace_validator)
 
     nodes = mUt.get_naming_nodes()
 
@@ -99,9 +101,6 @@ def analyze_selection():
         underscore_valdiator.find_double_underscore_issues(nodes)
     )
     report["issues"].extend(
-        underscore_valdiator.find_empty_token_issues(nodes)
-    )
-    report["issues"].extend(
         side_validator.find_side_naming_issues(nodes)
     )
     report["issues"].extend(
@@ -128,7 +127,26 @@ def analyze_selection():
     report["issues"].extend(
         token_count_validator.find_token_count_issues(nodes)
     )
+    report["issues"].extend(
+        namespace_validator.find_namespace_issues(nodes)
+    )
+    seen = set()
+    filtered = []
 
+    for issue in report["issues"]:
+
+        key = (
+            issue.get("node"),
+            issue["message"]
+        )
+
+        if key in seen:
+            continue
+
+        seen.add(key)
+        filtered.append(issue)
+
+    report["issues"] = filtered
     #print(report)
 
     return report

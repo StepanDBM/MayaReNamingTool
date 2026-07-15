@@ -4,50 +4,23 @@ from operations.validators import validation_utils as valUtil
 
 
 def find_double_underscore_issues(nodes):
-
     issues = []
-
     for node in nodes:
+        display_name = mUt.get_short_name(node)
+        clean_name = mUt.get_short_name_without_namespace(node)
 
-        name = mUt.get_short_name(node)
-
-        if "__" not in name:
+        if "__" not in clean_name:
             continue
-
         issues.append(
             valUtil.build_issue(
                 category="underscore",
-                value=name,
-                message="Double underscore detected",
-                suggestion="Remove redundant separators"
-            )
-        )
-
-    return issues
-
-
-def find_empty_token_issues(nodes):
-
-    issues = []
-
-    for node in nodes:
-
-        name = mUt.get_short_name(node)
-
-        parts = name.split("_")
-
-        if "" not in parts:
-            continue
-
-        issues.append(
-            valUtil.build_issue(
-                category="underscore",
-                node=name,
-                value=name,
+                node=display_name,
+                value=clean_name,
                 message="Double underscore detected",
                 suggestion="Remove redundant separators",
-                severity="warning"
+                severity="warning",
+                solver="collapse_underscores",
+                solvable=True
             )
         )
-
     return issues

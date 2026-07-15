@@ -15,42 +15,37 @@ TYPE_SUFFIXES = {
 
 
 def find_type_issues(nodes):
-
     issues = []
-
+    valid_type_suffixes = set(TYPE_SUFFIXES.values())
     for node in nodes:
-
-        expected_suffix = _get_expected_suffix(
-            node
-        )
-
+        expected_suffix = (_get_expected_suffix(node))
         if not expected_suffix:
             continue
-
-        name = mUt.get_short_name(node)
-
-        parts = name.split("_")
-
+        display_name = mUt.get_short_name(node)
+        clean_name = mUt.get_short_name_without_namespace(node)
+        parts = clean_name.split("_")
         if len(parts) < 2:
             continue
 
         current_suffix = parts[-1]
-
-        if current_suffix == expected_suffix:
+        # Unknown suffix?
+        # Let unknown_suffix_validator
+        # handle it instead.
+        if current_suffix not in valid_type_suffixes:
             continue
 
+        # Correct type.
+        if current_suffix == expected_suffix:
+            continue
         issues.append(
             valUtil.build_issue(
                 category="type",
-                node=name,
+                node=display_name,
                 value=current_suffix,
                 message="Node type naming mismatch",
                 suggestion=(
-                    f"Object type: "
-                    f"{expected_suffix} "
-                    f"and "
-                    f"'_{expected_suffix}' "
-                    f"is expected."
+                    f"Expected '_{expected_suffix}' "
+                    f"for this node type."
                 ),
                 severity="error"
             )
@@ -58,27 +53,17 @@ def find_type_issues(nodes):
 
     return issues
 
-
 def _get_expected_suffix(node):
-
     node_type = cmds.nodeType(node)
-
     if node_type == "joint":
         return TYPE_SUFFIXES["joint"]
-
     shapes = cmds.listRelatives(
         node,
         shapes=True,
         fullPath=True
     ) or []
-
     if not shapes:
         return None
+    shape_type = cmds.nodeType(shapes[0])
 
-    shape_type = cmds.nodeType(
-        shapes[0]
-    )
-
-    return TYPE_SUFFIXES.get(
-        shape_type
-    )
+    return TYPE_SUFFIXES.get(shape_type)
